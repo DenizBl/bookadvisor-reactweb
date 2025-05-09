@@ -35,7 +35,7 @@ export default function AdminBooks() {
             </div>
             <div className="flex items-center">
               <button
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/admin')}
                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 mr-4"
               >
                 Ana Sayfa

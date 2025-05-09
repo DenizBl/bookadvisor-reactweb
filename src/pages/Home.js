@@ -1,62 +1,3 @@
-// import React from 'react';
-// import { useNavigate } from 'react-router-dom';
-// import { useAuth } from '../contexts/AuthContext';
-// import BookList from '../components/BookList';
-
-// export default function Home() {
-//   const { currentUser, userRole, logout } = useAuth();
-//   const navigate = useNavigate();
-
-//   const handleLogout = async () => {
-//     try {
-//       await logout();
-//       navigate('/login');
-//     } catch (error) {
-//       console.error('Çıkış yapılırken hata oluştu:', error);
-//     }
-//   };
-
-//   return (
-//     <div>
-//       <div className="bg-white shadow">
-//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-//           <div className="flex justify-between h-16">
-//             <div className="flex">
-//               <div className="flex-shrink-0 flex items-center">
-//                 <h1 className="text-xl font-bold text-gray-900">Book Advisor</h1>
-//               </div>
-//             </div>
-//             <div className="flex items-center">
-//               <span className="text-gray-700 mr-4">
-//                 {currentUser?.email} ({userRole})
-//               </span>
-//               {userRole === 'admin' && (
-//                 <button
-//                   onClick={() => navigate('/admin/books')}
-//                   className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 mr-4"
-//                 >
-//                   Kitap Yönetimi
-//                 </button>
-//               )}
-//               <button
-//                 onClick={handleLogout}
-//                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700"
-//               >
-//                 Çıkış Yap
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-
-//       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-//         <BookList />
-//       </main>
-//     </div>
-//   );
-// } 
-
-
 
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -69,6 +10,10 @@ const HomeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-
 const CategoryIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h7" /></svg>;
 const AccountIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>;
 const LogoutIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>;
+const HeartIcon = () => <svg className="h-5 w-5 mr-2 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 21C12 21 4 13.5 4 8a4 4 0 018-2 4 4 0 018 2c0 5.5-8 13-8 13z" /></svg>;
+const BookOpenIcon = () => <svg className="h-5 w-5 mr-2 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 20h9M12 4H3v16h9m0-16v16m0-16l9 16" /></svg>;
+const TrendingUpIcon = () => <svg className="h-5 w-5 mr-2 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8" /><path d="M14 7h7v7" /></svg>;
+const ClockIcon = () => <svg className="h-5 w-5 mr-2 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 6v6l4 2" /><circle cx="12" cy="12" r="10" /></svg>;
 
 
 export default function HomePage() {
@@ -86,10 +31,20 @@ export default function HomePage() {
     }
   };
 
+  // const sidebarLinks = [
+  //   { name: 'Anasayfa', path: '/', icon: <HomeIcon /> },
+  //   { name: 'Kategoriler', path: '/categories', icon: <CategoryIcon /> }, // Örnek bir rota
+  // ];
+
   const sidebarLinks = [
     { name: 'Anasayfa', path: '/', icon: <HomeIcon /> },
-    { name: 'Kategoriler', path: '/categories', icon: <CategoryIcon /> }, // Örnek bir rota
+    { name: 'Kategoriler', path: '/categories', icon: <CategoryIcon /> },
+    { name: 'Favori Kitaplar', path: '/favorites', icon: <HeartIcon /> },
+    { name: 'Okuduğum Kitaplar', path: '/read-books', icon: <BookOpenIcon /> },
+    { name: 'En Çok Okunanlar', path: '/popular-books', icon: <TrendingUpIcon /> },
+    { name: 'Şu Anda Okuduklarım', path: '/currently-reading', icon: <ClockIcon /> },
   ];
+  
 
   if (currentUser) {
     sidebarLinks.push({ name: 'Account', path: '/account', icon: <AccountIcon /> });

@@ -132,7 +132,11 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+  const { userRole } = useAuth(); 
   const navigate = useNavigate();
+
+
+
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -145,7 +149,17 @@ export default function Login() {
       setLoading(true);
       await login(email, password);
       toast.success('Giriş başarılı! Yönlendiriliyorsunuz...');
-      navigate('/'); // Ana sayfaya veya dashboard'a yönlendir
+
+      
+  setTimeout(() => {
+    if (userRole === 'admin') {
+      navigate('/admin');
+    } else {
+      navigate('/');
+    }
+  }, 10);  // küçük bir gecikme ile role yüklenmesi beklenebilir
+
+      // navigate('/'); // Ana sayfaya veya dashboard'a yönlendir
     } catch (error) {
       console.error("Giriş hatası:", error);
       if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
@@ -159,6 +173,9 @@ export default function Login() {
     }
     setLoading(false);
   }
+
+
+
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-amber-50 py-12 px-4 sm:px-6 lg:px-8">

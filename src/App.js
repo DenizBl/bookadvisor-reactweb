@@ -6,6 +6,14 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './pages/Home';
 import AdminBooks from './pages/AdminBooks';
+import Favorites from './pages/Favorites';
+import ReadBooks from './pages/ReadBooks';
+import PopularBooks from './pages/PopularBooks';
+import CategoriesPage from './pages/CategoriesPage';
+import CategoryDetailPage from './pages/CategoryDetailPage';
+import CurrentlyReading from './pages/CurrentlyReading';
+import AccountPage from './pages/AccountPage';
+import AdminHome from "./pages/AdminPages/AdminHome" // Yeni Admin Ana Sayfa
 import './App.css';
 
 // Protected Route component
@@ -112,15 +120,33 @@ function App() {
                   }
                 />
                 {/* Admin routes */}
-                <Route
-                  path="/admin/books"
-                  element={
-                    <PrivateRoute requiredRole="admin">
-                      {/* AdminBooks da kendi Header'ını veya ortak bir Layout'u kullanabilir */}
-                      <AdminBooks />
-                    </PrivateRoute>
-                  }
-                />
+         
+
+                {/* YENİ ADMIN ANA ROTASI */}
+              <Route
+                path="/admin" // Veya /admin/home, /admin/dashboard
+                element={
+                  <PrivateRoute requiredRole="admin">
+                    <AdminHome />
+                  </PrivateRoute>
+                }
+              />
+              {/* /admin/books rotası AdminHome içinde bir link olabilir veya burada kalabilir */}
+              {/* Eğer AdminHome'un Outlet'ini kullanacaksanız bu rota AdminHome'un altına taşınabilir */}
+              <Route
+                path="/admin/books"
+                element={
+                  <PrivateRoute requiredRole="admin">
+                    <AdminBooks />
+                  </PrivateRoute>
+                }
+              />
+              {/* Diğer Admin Alt Rotaları (eğer AdminHome içinde Outlet kullanılıyorsa):
+              <Route path="/admin" element={<PrivateRoute requiredRole="admin"><AdminHome /></PrivateRoute>}>
+                <Route path="books" element={<AdminBooks />} />
+                <Route path="users" element={<AdminUsers />} /> // Örnek
+              </Route>
+              */}
                 {/* Member routes */}
                 <Route
                   path="/books"
@@ -129,8 +155,71 @@ function App() {
                        {/* Bu sayfa da kendi Header'ını veya ortak bir Layout'u kullanabilir */}
                       <div>Kitaplar</div>
                     </PrivateRoute>
+                    
+                    
                   }
                 />
+
+<Route
+  path="/categories"
+  element={
+    <PrivateRoute>
+      <CategoriesPage />
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/category/:slug"
+  element={
+    <PrivateRoute>
+      <CategoryDetailPage />
+    </PrivateRoute>
+  }
+/>
+
+                <Route
+  path="/favorites"
+  element={
+    <PrivateRoute>
+      <Favorites />
+    </PrivateRoute>
+  }
+/>
+<Route
+  path="/read-books"
+  element={
+    <PrivateRoute>
+      <ReadBooks />
+    </PrivateRoute>
+  }
+/>
+<Route
+  path="/popular-books"
+  element={
+    <PrivateRoute>
+      <PopularBooks />
+    </PrivateRoute>
+  }
+/>
+<Route
+  path="/currently-reading"
+  element={
+    <PrivateRoute>
+      <CurrentlyReading />
+    </PrivateRoute>
+  }
+/>
+<Route
+  path="/account"
+  element={
+    <PrivateRoute>
+      <AccountPage />
+    </PrivateRoute>
+  }
+
+/>
+
               </Routes>
             {/* </div> */}
           </main>
