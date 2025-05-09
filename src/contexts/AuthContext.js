@@ -39,15 +39,35 @@ export function AuthProvider({ children }) {
     return null;
   }
 
+  // useEffect(() => {
+  //   const unsubscribe = onAuthStateChanged(auth, async (user) => {
+  //     setCurrentUser(user);
+  //     if (user) {
+  //       const role = await getUserRole(user.uid);
+  //       setUserRole(role);
+  //     } else {
+  //       setUserRole(null);
+  //     }
+  //     setLoading(false);
+  //   });
+
+  //   return unsubscribe;
+  // }, []);
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async user => {
       setCurrentUser(user);
+
       if (user) {
-        const role = await getUserRole(user.uid);
-        setUserRole(role);
+        const docRef = doc(db, 'users', user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setUserRole(data.role); // Örn: "admin" veya "member"
+        }
       } else {
         setUserRole(null);
       }
+
       setLoading(false);
     });
 
