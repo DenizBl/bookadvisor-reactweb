@@ -35,7 +35,7 @@ export function SearchProvider({ children }) {
   };
 
   return (
-    <SearchContext.Provider value={{ searchTerm, setSearchTerm, searchResults, isSearching, searchBooks, clearSearch }}>
+    <SearchContext.Provider value={{ searchTerm, setSearchTerm, searchResults, setSearchResults, isSearching, searchBooks, clearSearch }}>
       {children}
     </SearchContext.Provider>
   );
