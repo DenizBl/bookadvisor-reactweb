@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext'; // AuthContext yolunuzu doğrulayın
 import toast from 'react-hot-toast';
+import { useSearch } from '../contexts/SearchContext';
 
 // Basit İkonlar (SVG)
 const SearchIcon = () => (
@@ -16,11 +17,10 @@ const UserCircleIcon = () => (
   </svg>
 );
 
-
 export default function Header() {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState('');
+  const { searchTerm, setSearchTerm, searchBooks, isSearching } = useSearch();
 
   const handleLogout = async () => {
     try {
@@ -36,10 +36,7 @@ export default function Header() {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchTerm.trim()) {
-      // Arama sonuçları sayfasına yönlendirme veya arama işlemini tetikleme
-      // navigate(`/search?q=${encodeURIComponent(searchTerm)}`);
-      toast(`Arama: ${searchTerm}`, { icon: '🔍' });
-      setSearchTerm(''); // Arama sonrası inputu temizle
+      searchBooks(searchTerm);
     }
   };
 
@@ -56,7 +53,7 @@ export default function Header() {
 
           {/* Orta: Arama Çubuğu */}
           <div className="flex-grow max-w-xl mx-4">
-            <form onSubmit={handleSearch} className="relative">
+            <form onSubmit={handleSearch} className="relative flex">
               <input
                 type="search"
                 name="search"
@@ -64,11 +61,20 @@ export default function Header() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Kitap, yazar veya tür ara..."
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-red-500 focus:border-red-500 sm:text-sm"
+                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-l-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-red-500 focus:border-red-500 sm:text-sm"
+                disabled={isSearching}
               />
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <SearchIcon />
               </div>
+              <button
+                type="submit"
+                disabled={isSearching}
+                className="px-4 py-2 bg-red-600 text-white rounded-r-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50"
+                style={{ marginLeft: '-1px' }}
+              >
+                Search
+              </button>
             </form>
           </div>
 
