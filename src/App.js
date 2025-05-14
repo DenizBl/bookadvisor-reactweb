@@ -15,6 +15,7 @@ import CurrentlyReading from './pages/CurrentlyReading';
 import AccountPage from './pages/AccountPage';
 import AdminHome from "./pages/AdminPages/AdminHome" // Yeni Admin Ana Sayfa
 import { SearchProvider } from './contexts/SearchContext';
+import BookDetailPage from './pages/BookDetailPage';
 import './App.css';
 
 // Protected Route component
@@ -221,6 +222,7 @@ function App() {
     }
 
   />
+  <Route path="/book/:id" element={<BookDetailPage />} />
 
                 </Routes>
               {/* </div> */}
