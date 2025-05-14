@@ -14,15 +14,21 @@ export const googleBooksService = {
         }
     },
 
-    // Get books by category
-    getBooksByCategory: async (category) => {
+    
+
+    getBooksByCategory: async (category, lang = 'tr') => { // lang parametresi eklendi, varsayılan 'tr'
         try {
-            const response = await fetch(`${BASE_URL}?q=subject:${category}&key=${API_KEY}`);
+            // `category` subject olarak aranırken tırnak içinde olması daha doğru sonuçlar verebilir.
+            // Örn: "Juvenile Fiction" gibi boşluk içeren kategoriler için.
+            // Ancak Google API'si subject:Fiction şeklinde de çalışır.
+            // Güvenlik için category'yi de encodeURIComponent ile sarmalayalım.
+            const query = `subject:${encodeURIComponent(category)}`;
+            const response = await fetch(`${BASE_URL}?q=${query}&langRestrict=${lang}&maxResults=20&key=${API_KEY}`); // maxResults eklendi (opsiyonel)
             const data = await response.json();
             return data.items || [];
         } catch (error) {
-            console.error('Error fetching books by category:', error);
-            throw error;
+            console.error(`Error fetching books by category "${category}" with lang "${lang}":`, error);
+            return []; // Hata durumunda boş dizi döndürmek daha kullanıcı dostu olabilir
         }
     },
 
