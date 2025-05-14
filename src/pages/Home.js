@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/Header';
 import toast from 'react-hot-toast';
 import { googleBooksService } from '../services/googleBooksService';
 import { useSearch } from '../contexts/SearchContext';
+import { db } from '../firebase/config';
+import { doc, setDoc } from 'firebase/firestore';
 
 // Icons
 const HomeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>;
@@ -49,7 +51,18 @@ export default function HomePage() {
   const { logout, currentUser } = useAuth();
   const navigate = useNavigate();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
-  const { searchTerm, searchResults, isSearching } = useSearch();
+  const { searchTerm, searchResults, isSearching, setSearchTerm, setSearchResults } = useSearch();
+
+  useEffect(() => {
+    async function fetchInitialBooks() {
+      if (!searchTerm) {
+        const results = await googleBooksService.searchBooks('Fiction');
+        setSearchResults(results.slice(0, 20));
+      }
+    }
+    fetchInitialBooks();
+    // eslint-disable-next-line
+  }, []);
 
   const handleLogoutFromSidebar = async () => {
     try {
@@ -59,6 +72,28 @@ export default function HomePage() {
     } catch (error) {
       toast.error('Logout failed.');
       console.error("Logout error:", error);
+    }
+  };
+
+  const handleAddToFavorites = async (book) => {
+    if (!currentUser) {
+      toast.error('Favorilere eklemek için giriş yapmalısınız.');
+      return;
+    }
+    try {
+      await setDoc(
+        doc(db, 'users', currentUser.uid, 'favorites', book.id),
+        {
+          id: book.id,
+          title: book.volumeInfo.title,
+          authors: book.volumeInfo.authors || [],
+          thumbnail: book.volumeInfo.imageLinks?.thumbnail || '',
+          addedAt: new Date(),
+        }
+      );
+      toast.success('Kitap favorilere eklendi!');
+    } catch (err) {
+      toast.error('Favorilere eklenirken hata oluştu.');
     }
   };
 
@@ -162,7 +197,7 @@ export default function HomePage() {
           </section>
 
           {/* Search Results (from context) */}
-          {searchTerm && searchResults.length > 0 && (
+          {searchResults.length > 0 && (
             <div className="mb-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-semibold text-gray-800">Search Results</h2>
@@ -217,10 +252,13 @@ export default function HomePage() {
 
                         {/* Action Buttons */}
                         <div className="mt-3 flex gap-2">
-                          <button className="text-sm px-3 py-1 bg-red-50 text-red-600 rounded-full hover:bg-red-100 transition-colors">
-                            Add to List
+                          <button
+                            className="text-sm px-3 py-1 bg-red-50 text-red-600 rounded-full hover:bg-red-100 transition-colors"
+                            onClick={() => handleAddToFavorites(book)}
+                          >
+                            Add to Favorites
                           </button>
-                          <Link 
+                          <Link
                             to={`/book/${book.id}`}
                             className="text-sm px-3 py-1 bg-gray-50 text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
                           >
@@ -235,48 +273,7 @@ export default function HomePage() {
             </div>
           )}
 
-          {/* Featured Books Section */}
-          <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-            <div className="flex justify-between items-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900">Featured Books</h2>
-              <Link to="/books" className="text-red-600 hover:text-red-700 font-medium">
-                View All →
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {featuredBooks.map((book) => (
-                <div key={book.id} className="bg-white rounded-lg shadow-lg overflow-hidden transform transition duration-300 hover:scale-105">
-                  <div className="relative h-64">
-                    <img
-                      src={book.imageUrl}
-                      alt={book.title}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-sm">
-                      {book.category}
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">{book.title}</h3>
-                    <p className="text-gray-600 mb-4">{book.author}</p>
-                    <div
-                      className="bg-gray-50 border-l-4 border-red-600 p-4 rounded text-gray-700 text-base leading-relaxed shadow-sm"
-                      dangerouslySetInnerHTML={{ __html: book.description }}
-                    />
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <span className="text-yellow-400">★</span>
-                        <span className="ml-1 text-gray-600">{book.rating}</span>
-                      </div>
-                      <Link to={`/books/${book.id}`} className="text-red-600 hover:text-red-700 font-medium">
-                        Learn More →
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
+         
 
           
 
