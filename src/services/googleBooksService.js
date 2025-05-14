@@ -33,9 +33,12 @@ export const googleBooksService = {
     },
 
     // Get book details by ID
-    getBookById: async (bookId) => {
+    getBookById: async (id) => {
         try {
-            const response = await fetch(`${BASE_URL}/${bookId}?key=${API_KEY}`);
+            const response = await fetch(`${BASE_URL}/${id}?key=${API_KEY}`);
+            if (!response.ok) {
+                throw new Error('Kitap detayları alınamadı');
+            }
             const data = await response.json();
             return data;
         } catch (error) {
