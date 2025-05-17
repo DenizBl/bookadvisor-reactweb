@@ -1,12 +1,10 @@
-
-
-
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { googleBooksService } from '../services/googleBooksService';
 // categoriesData'nın doğru yoldan import edildiğinden emin olun
 // ve displayNameTR alanını içerdiğinden emin olun.
 import { categoriesData } from '../contexts/categoriesData'; // Sizin belirttiğiniz yol
+import Header from '../components/Header';
 
 export default function CategoryDetailPage() {
   const { slug } = useParams(); // Bu, URL'den gelen İngilizce slug (örn: "Fiction")
@@ -45,38 +43,46 @@ export default function CategoryDetailPage() {
   }, [slug]); // categoriesData statik bir import ise bağımlılık olarak eklenmesine gerek yok.
 
   return (
-    <div className="container mx-auto p-4">
-      {/* Kategori adını Türkçe olarak ve "Kitapları" ekiyle göster */}
-      <h1 className="text-3xl font-bold mb-6">{categoryDisplayName} Kitapları</h1>
-      {loading ? (
-        <div className="text-center py-10">Yükleniyor...</div>
-      ) : books.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {books.map(book => (
-            <div key={book.id} className="bg-white p-4 rounded-lg shadow flex flex-col">
-              <img
-                src={book.volumeInfo.imageLinks?.thumbnail || 'https://via.placeholder.com/150x220.png?text=Kapak+Yok'} // Biraz daha dikey bir placeholder
-                alt={book.volumeInfo.title}
-                className="w-full h-64 object-contain mb-3 rounded" // Yüksekliği biraz ayarladım, object-contain önemli
-              />
-              <div className="flex flex-col flex-grow"> {/* İçeriğin dikeyde büyümesini sağlar */}
-                <h3 className="text-lg font-semibold text-red-600 mb-1 line-clamp-2">
-                  {book.volumeInfo.title}
-                </h3>
-                <p className="text-sm text-gray-500 mb-2 line-clamp-1">
-                  {book.volumeInfo.authors?.join(', ') || 'Bilinmeyen Yazar'}
-                </p>
-                {/* Açıklamanın kartın en altında kalması için mt-auto */}
-                <p className="text-xs text-gray-600 line-clamp-3 mt-auto">
-                  {book.volumeInfo.description || 'Açıklama mevcut değil.'}
-                </p>
-              </div>
-            </div>
-          ))}
+    <div>
+      <Header />
+      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div className="bg-gradient-to-r from-red-600 to-red-700 rounded-lg shadow-lg px-4 py-2 mb-6">
+          <h1 className="text-2xl font-bold text-white">
+            {categoryDisplayName} Kitapları
+            <span className="text-sm font-normal text-red-100 ml-2">
+              {books.length} kitap
+            </span>
+          </h1>
         </div>
-      ) : (
-        <div className="text-center py-10">Bu kategoride Türkçe kitap bulunamadı veya bir hata oluştu.</div>
-      )}
+        {loading ? (
+          <div className="text-center py-10">Yükleniyor...</div>
+        ) : books.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {books.map(book => (
+              <div key={book.id} className="bg-white p-4 rounded-lg shadow flex flex-col">
+                <img
+                  src={book.volumeInfo.imageLinks?.thumbnail || 'https://via.placeholder.com/150x220.png?text=Kapak+Yok'}
+                  alt={book.volumeInfo.title}
+                  className="w-full h-64 object-contain mb-3 rounded"
+                />
+                <div className="flex flex-col flex-grow">
+                  <h3 className="text-lg font-semibold text-red-600 mb-1 line-clamp-2">
+                    {book.volumeInfo.title}
+                  </h3>
+                  <p className="text-sm text-gray-500 mb-2 line-clamp-1">
+                    {book.volumeInfo.authors?.join(', ') || 'Bilinmeyen Yazar'}
+                  </p>
+                  <p className="text-xs text-gray-600 line-clamp-3 mt-auto">
+                    {book.volumeInfo.description || 'Açıklama mevcut değil.'}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-10">Bu kategoride Türkçe kitap bulunamadı veya bir hata oluştu.</div>
+        )}
+      </div>
     </div>
   );
 }

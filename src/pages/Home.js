@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import { googleBooksService } from '../services/googleBooksService';
 import { useSearch } from '../contexts/SearchContext';
 import { db } from '../firebase/config';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, collection, query, getDocs } from 'firebase/firestore';
 
 // Icons
 const HomeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>;
@@ -22,28 +22,6 @@ const ClockIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w
 const ChevronLeftIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>;
 const ChevronRightIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>;
 
-// Updated book data with real book covers and descriptions
-const featuredBooks = [
-  {
-    id: 1,
-    title: 'The Midnight Library',
-    author: 'Matt Haig',
-    imageUrl: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602190253i/52578297.jpg',
-    description: 'Between life and death there is a library, and within that library, the shelves go on forever.',
-    rating: 4.5,
-    category: 'Fiction'
-  },
-  {
-    id: 2,
-    title: 'Project Hail Mary',
-    author: 'Andy Weir',
-    imageUrl: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1597695864i/54493401.jpg',
-    description: 'A lone astronaut must save the earth from disaster in this incredible new science-based thriller.',
-    rating: 4.8,
-    category: 'Science Fiction'
-  },
-
-];
 
 
 
@@ -52,6 +30,8 @@ export default function HomePage() {
   const navigate = useNavigate();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
   const { searchTerm, searchResults, isSearching, setSearchTerm, setSearchResults } = useSearch();
+  const [commentCounts, setCommentCounts] = useState({});
+  const [likeCounts, setLikeCounts] = useState({});
 
   useEffect(() => {
     async function fetchInitialBooks() {
@@ -63,6 +43,33 @@ export default function HomePage() {
     fetchInitialBooks();
     // eslint-disable-next-line
   }, []);
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+      const comments = {};
+      const likes = {};
+      
+      for (const book of searchResults) {
+        // Fetch comments count
+        const commentsRef = collection(db, 'bookComments', book.id, 'comments');
+        const commentsQuery = query(commentsRef);
+        const commentsSnapshot = await getDocs(commentsQuery);
+        comments[book.id] = commentsSnapshot.size;
+
+        // Fetch likes count
+        const likesRef = doc(db, 'bookLikes', book.id);
+        const likesDoc = await getDoc(likesRef);
+        likes[book.id] = likesDoc.exists() ? likesDoc.data().count : 0;
+      }
+
+      setCommentCounts(comments);
+      setLikeCounts(likes);
+    };
+
+    if (searchResults.length > 0) {
+      fetchCounts();
+    }
+  }, [searchResults]);
 
   const handleLogoutFromSidebar = async () => {
     try {
@@ -205,64 +212,94 @@ export default function HomePage() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {searchResults.map((book) => (
-                  <div key={book.id} className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
-                    <div className="flex p-4">
-                      {/* Book Cover */}
-                      <Link to={`/book/${book.id}`} className="w-24 h-36 flex-shrink-0 block">
-                        <img
-                          src={book.volumeInfo.imageLinks?.thumbnail || 'https://via.placeholder.com/150x200'}
-                          alt={book.volumeInfo.title}
-                          className="w-full h-full object-cover rounded-md shadow-sm hover:opacity-80 transition-opacity duration-200"
-                        />
-                      </Link>
-                      
-                      {/* Book Details */}
-                      <div className="ml-4 flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-1 line-clamp-2">
-                          {book.volumeInfo.title}
-                        </h3>
-                        <p className="text-sm text-gray-600 mb-2">
-                          {book.volumeInfo.authors?.join(', ') || 'Unknown Author'}
-                        </p>
+                  <div key={book.id} className="bg-[#f7e8e6] rounded-lg shadow-md hover:shadow-xl transition-all duration-300 h-[300px] transform hover:-translate-y-1 hover:scale-[1.02] group">
+                    <div className="flex flex-col p-4 h-full">
+                      <div className="flex flex-1">
+                        {/* Book Cover */}
+                        <Link to={`/book/${book.id}`} className="w-24 h-36 flex-shrink-0 block">
+                          <img
+                            src={book.volumeInfo.imageLinks?.thumbnail || 'https://via.placeholder.com/150x200'}
+                            alt={book.volumeInfo.title}
+                            className="w-full h-full object-cover rounded-md shadow-sm group-hover:shadow-md transition-all duration-300"
+                          />
+                        </Link>
                         
-                        {/* Rating */}
-                        <div className="flex items-center mb-2">
-                          <div className="flex items-center">
-                            <span className="text-yellow-400">★</span>
-                            <span className="ml-1 text-sm text-gray-600">
-                              {book.volumeInfo.averageRating ? 
-                                `${book.volumeInfo.averageRating.toFixed(1)} (${book.volumeInfo.ratingsCount || 0})` : 
-                                'No ratings'}
-                            </span>
+                        {/* Book Details */}
+                        <div className="ml-4 flex-1 overflow-hidden">
+                          <h3 className="text-lg font-semibold text-gray-900 mb-1 line-clamp-2 group-hover:text-red-600 transition-colors duration-300">
+                            {book.volumeInfo.title}
+                          </h3>
+                          <p className="text-sm text-gray-600 mb-2 line-clamp-1">
+                            {book.volumeInfo.authors?.join(', ') || 'Unknown Author'}
+                          </p>
+                          
+                          {/* Rating */}
+                          <div className="flex items-center mb-2">
+                            <div className="flex items-center">
+                              <span className="text-yellow-400 group-hover:scale-110 transition-transform duration-300">★</span>
+                              <span className="ml-1 text-sm text-gray-600">
+                                {book.volumeInfo.averageRating ? 
+                                  `${book.volumeInfo.averageRating.toFixed(1)} (${book.volumeInfo.ratingsCount || 0})` : 
+                                  'No ratings'}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Additional Details */}
+                          <div className="text-xs text-gray-500 space-y-1">
+                            {book.volumeInfo.publishedDate && (
+                              <p>Published: {new Date(book.volumeInfo.publishedDate).getFullYear()}</p>
+                            )}
+                            {book.volumeInfo.pageCount && (
+                              <p>{book.volumeInfo.pageCount} pages</p>
+                            )}
+                            {book.volumeInfo.categories && (
+                              <p className="line-clamp-1">{book.volumeInfo.categories[0]}</p>
+                            )}
                           </div>
                         </div>
+                      </div>
 
-                        {/* Additional Details */}
-                        <div className="text-xs text-gray-500 space-y-1">
-                          {book.volumeInfo.publishedDate && (
-                            <p>Published: {new Date(book.volumeInfo.publishedDate).getFullYear()}</p>
-                          )}
-                          {book.volumeInfo.pageCount && (
-                            <p>{book.volumeInfo.pageCount} pages</p>
-                          )}
-                          {book.volumeInfo.categories && (
-                            <p className="line-clamp-1">{book.volumeInfo.categories[0]}</p>
-                          )}
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div className="mt-3 flex gap-2">
+                      {/* Action Buttons */}
+                      <div className="mt-auto flex flex-col gap-2 border-t border-gray-200 pt-4">
+                        <div className="flex justify-around">
                           <button
-                            className="text-sm px-3 py-1 bg-red-50 text-red-600 rounded-full hover:bg-red-100 transition-colors"
                             onClick={() => handleAddToFavorites(book)}
+                            className="group/btn flex items-center gap-1.5 text-sm px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-300 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
                           >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 group-hover/btn:scale-110 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                            </svg>
                             Add to Favorites
                           </button>
                           <Link
                             to={`/book/${book.id}`}
-                            className="text-sm px-3 py-1 bg-gray-50 text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+                            className="group/btn flex items-center gap-1.5 text-sm px-4 py-2 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-lg hover:from-gray-700 hover:to-gray-800 transition-all duration-300 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
                           >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 group-hover/btn:scale-110 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 002.25-2.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v2.25A2.25 2.25 0 006 10.5zm0 9.75h2.25A2.25 2.25 0 0010.5 18v-2.25a2.25 2.25 0 00-2.25-2.25H6a2.25 2.25 0 00-2.25 2.25V18A2.25 2.25 0 006 20.25zm9.75-9.75H18a2.25 2.25 0 002.25-2.25V6A2.25 2.25 0 0018 3.75h-2.25A2.25 2.25 0 0013.5 6v2.25a2.25 2.25 0 002.25 2.25z" />
+                            </svg>
                             Details
+                          </Link>
+                        </div>
+                        <div className="flex justify-around">
+                          <Link
+                            to={`/book/${book.id}`}
+                            className="group/btn flex items-center gap-1.5 text-sm px-4 py-1.5 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-300 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 group-hover/btn:scale-110 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                            </svg>
+                            {commentCounts[book.id] || 0} Comments
+                          </Link>
+                          <Link
+                            to={`/book/${book.id}`}
+                            className="group/btn flex items-center gap-1.5 text-sm px-4 py-1.5 bg-gradient-to-r from-rose-500 to-rose-600 text-white rounded-lg hover:from-rose-600 hover:to-rose-700 transition-all duration-300 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 group-hover/btn:scale-110 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                            {likeCounts[book.id] || 0} Likes
                           </Link>
                         </div>
                       </div>
