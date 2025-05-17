@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { googleBooksService } from '../services/googleBooksService';
 // categoriesData'nın doğru yoldan import edildiğinden emin olun
 // ve displayNameTR alanını içerdiğinden emin olun.
@@ -59,14 +59,18 @@ export default function CategoryDetailPage() {
         ) : books.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {books.map(book => (
-              <div key={book.id} className="bg-white p-4 rounded-lg shadow flex flex-col">
+              <Link 
+                key={book.id} 
+                to={`/book/${book.id}`}
+                className="bg-white p-4 rounded-lg shadow hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02] group flex flex-col"
+              >
                 <img
                   src={book.volumeInfo.imageLinks?.thumbnail || 'https://via.placeholder.com/150x220.png?text=Kapak+Yok'}
                   alt={book.volumeInfo.title}
-                  className="w-full h-64 object-contain mb-3 rounded"
+                  className="w-full h-64 object-contain mb-3 rounded group-hover:shadow-md transition-all duration-300"
                 />
                 <div className="flex flex-col flex-grow">
-                  <h3 className="text-lg font-semibold text-red-600 mb-1 line-clamp-2">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-1 line-clamp-2 group-hover:text-red-600 transition-colors duration-300">
                     {book.volumeInfo.title}
                   </h3>
                   <p className="text-sm text-gray-500 mb-2 line-clamp-1">
@@ -76,7 +80,7 @@ export default function CategoryDetailPage() {
                     {book.volumeInfo.description || 'Açıklama mevcut değil.'}
                   </p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         ) : (
