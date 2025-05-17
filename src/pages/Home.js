@@ -208,13 +208,13 @@ export default function HomePage() {
                   <div key={book.id} className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
                     <div className="flex p-4">
                       {/* Book Cover */}
-                      <div className="w-24 h-36 flex-shrink-0">
+                      <Link to={`/book/${book.id}`} className="w-24 h-36 flex-shrink-0 block">
                         <img
                           src={book.volumeInfo.imageLinks?.thumbnail || 'https://via.placeholder.com/150x200'}
                           alt={book.volumeInfo.title}
-                          className="w-full h-full object-cover rounded-md shadow-sm"
+                          className="w-full h-full object-cover rounded-md shadow-sm hover:opacity-80 transition-opacity duration-200"
                         />
-                      </div>
+                      </Link>
                       
                       {/* Book Details */}
                       <div className="ml-4 flex-1">
