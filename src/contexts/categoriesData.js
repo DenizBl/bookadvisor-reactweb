@@ -29,22 +29,22 @@ export const CookingIcon = (props) => (
 );
 export const ArtIcon = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
-    <circle cx="12" cy="12" r="10" /><path d="M8 15s1.5-2 4-2 4 2 4 2" />
+    <circle cx="12" cy="12" r="10" /><circle cx="8" cy="10" r="2" /><circle cx="16" cy="10" r="2" /><path d="M12 14c2 0 4-1 4-3s-2-3-4-3-4 1-4 3 2 3 4 3z" />
   </svg>
 );
-export const LawIcon = (props) => (
+export const GavelIcon = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v18m9-9H3" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M14 10l7 7m-7-7l-7 7m7-7V3m0 14v4" />
   </svg>
 );
-export const DramaIcon = (props) => (
+export const MasksIcon = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M15 9h.01M9 9h.01M8 13a4 4 0 008 0" />
+    <path d="M2 12s4-8 10-8 10 8 10 8-4 8-10 8S2 12 2 12z" /><circle cx="8" cy="12" r="1" /><circle cx="16" cy="12" r="1" />
   </svg>
 );
-export const MathIcon = (props) => (
+export const CalculatorIcon = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+    <rect x="4" y="2" width="16" height="20" rx="2" /><rect x="8" y="6" width="8" height="2" /><circle cx="8" cy="14" r="1" /><circle cx="12" cy="14" r="1" /><circle cx="16" cy="14" r="1" /><circle cx="8" cy="18" r="1" /><circle cx="12" cy="18" r="1" /><circle cx="16" cy="18" r="1" />
   </svg>
 );
 export const ComputerIcon = (props) => (
@@ -112,6 +112,62 @@ export const HomeIcon = (props) => (
     <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l9-9 9 9M4 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
   </svg>
 );
+// New icons for better matching
+export const StethoscopeIcon = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <circle cx="12" cy="12" r="10" /><path d="M8 15s1.5 2 4 2 4-2 4-2M12 17v2" />
+  </svg>
+);
+export const PaletteIcon = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <circle cx="12" cy="12" r="10" /><circle cx="8" cy="10" r="1" /><circle cx="16" cy="10" r="1" /><circle cx="12" cy="16" r="1" />
+  </svg>
+);
+export const GraphIcon = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <rect x="3" y="12" width="4" height="8" /><rect x="9" y="8" width="4" height="12" /><rect x="15" y="4" width="4" height="16" />
+  </svg>
+);
+export const ScissorsIcon = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <circle cx="6" cy="6" r="2" /><circle cx="18" cy="6" r="2" /><path d="M4 20l16-16M4 4l16 16" />
+  </svg>
+);
+export const CapIcon = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path d="M12 3L2 9l10 6 10-6-10-6zm0 13v5" />
+  </svg>
+);
+export const ColumnIcon = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <rect x="8" y="4" width="8" height="16" rx="2" />
+  </svg>
+);
+export const BuildingIcon = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <rect x="4" y="4" width="16" height="16" rx="2" /><path d="M8 20V4M16 20V4" />
+  </svg>
+);
+export const BrainIcon = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <ellipse cx="12" cy="12" rx="10" ry="7" /><path d="M12 5v14" />
+  </svg>
+);
+export const TrophyIcon = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <rect x="6" y="4" width="12" height="8" rx="2" /><path d="M8 12v4a4 4 0 008 0v-4" />
+  </svg>
+);
+export const NotebookIcon = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <rect x="4" y="2" width="16" height="20" rx="2" /><path d="M8 6h8M8 10h8M8 14h8" />
+  </svg>
+);
+export const HandcuffsIcon = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <circle cx="7" cy="17" r="3" /><circle cx="17" cy="7" r="3" /><path d="M10 14l4-4" />
+  </svg>
+);
 
 export const categoriesData = [
   { name: 'Fiction', slug: 'Fiction', displayNameTR: 'Kurgu', Icon: BookIcon },
@@ -122,16 +178,16 @@ export const categoriesData = [
   { name: 'Science', slug: 'Science', displayNameTR: 'Bilim', Icon: ScienceIcon },
   { name: 'History', slug: 'History', displayNameTR: 'Tarih', Icon: HistoryIcon },
   { name: 'Religion', slug: 'Religion', displayNameTR: 'Din', Icon: GlobeIcon },
-  { name: 'Social Science', slug: 'Social Science', displayNameTR: 'Sosyal Bilimler', Icon: GlobeIcon },
+  { name: 'Social Science', slug: 'Social Science', displayNameTR: 'Sosyal Bilimler', Icon: UserIcon },
   { name: 'Technology & Engineering', slug: 'Technology & Engineering', displayNameTR: 'Teknoloji & Mühendislik', Icon: LightbulbIcon },
-  { name: 'Medical', slug: 'Medical', displayNameTR: 'Tıp', Icon: HeartIcon },
-  { name: 'Art', slug: 'Art', displayNameTR: 'Sanat', Icon: ArtIcon },
-  { name: 'Business & Economics', slug: 'Business & Economics', displayNameTR: 'İşletme & Ekonomi', Icon: StarIcon },
+  { name: 'Medical', slug: 'Medical', displayNameTR: 'Tıp', Icon: StethoscopeIcon },
+  { name: 'Art', slug: 'Art', displayNameTR: 'Sanat', Icon: PaletteIcon },
+  { name: 'Business & Economics', slug: 'Business & Economics', displayNameTR: 'İşletme & Ekonomi', Icon: GraphIcon },
   { name: 'Computers', slug: 'Computers', displayNameTR: 'Bilgisayarlar', Icon: ComputerIcon },
   { name: 'Cooking', slug: 'Cooking', displayNameTR: 'Yemek Kitapları', Icon: CookingIcon },
-  { name: 'Crafts & Hobbies', slug: 'Crafts & Hobbies', displayNameTR: 'El Sanatları & Hobiler', Icon: LeafIcon },
-  { name: 'Drama', slug: 'Drama', displayNameTR: 'Tiyatro', Icon: DramaIcon },
-  { name: 'Education', slug: 'Education', displayNameTR: 'Eğitim', Icon: LightbulbIcon },
+  { name: 'Crafts & Hobbies', slug: 'Crafts & Hobbies', displayNameTR: 'El Sanatları & Hobiler', Icon: ScissorsIcon },
+  { name: 'Drama', slug: 'Drama', displayNameTR: 'Tiyatro', Icon: MasksIcon },
+  { name: 'Education', slug: 'Education', displayNameTR: 'Eğitim', Icon: CapIcon },
   { name: 'Family & Relationships', slug: 'Family & Relationships', displayNameTR: 'Aile & İlişkiler', Icon: FamilyIcon },
   { name: 'Foreign Language Study', slug: 'Foreign Language Study', displayNameTR: 'Yabancı Dil Eğitimi', Icon: GlobeIcon },
   { name: 'Games', slug: 'Games', displayNameTR: 'Oyunlar', Icon: GameIcon },
@@ -139,20 +195,20 @@ export const categoriesData = [
   { name: 'Health & Fitness', slug: 'Health & Fitness', displayNameTR: 'Sağlık & Fitness', Icon: HeartIcon },
   { name: 'House & Home', slug: 'House & Home', displayNameTR: 'Ev & Yaşam', Icon: HomeIcon },
   { name: 'Humor', slug: 'Humor', displayNameTR: 'Mizah', Icon: SmileIcon },
-  { name: 'Law', slug: 'Law', displayNameTR: 'Hukuk', Icon: LawIcon },
+  { name: 'Law', slug: 'Law', displayNameTR: 'Hukuk', Icon: GavelIcon },
   { name: 'Literary Criticism', slug: 'Literary Criticism', displayNameTR: 'Edebi Eleştiri', Icon: BookIcon },
-  { name: 'Mathematics', slug: 'Mathematics', displayNameTR: 'Matematik', Icon: MathIcon },
+  { name: 'Mathematics', slug: 'Mathematics', displayNameTR: 'Matematik', Icon: CalculatorIcon },
   { name: 'Music', slug: 'Music', displayNameTR: 'Müzik', Icon: MusicIcon },
   { name: 'Nature', slug: 'Nature', displayNameTR: 'Doğa', Icon: LeafIcon },
-  { name: 'Performing Arts', slug: 'Performing Arts', displayNameTR: 'Sahne Sanatları', Icon: DramaIcon },
+  { name: 'Performing Arts', slug: 'Performing Arts', displayNameTR: 'Sahne Sanatları', Icon: MasksIcon },
   { name: 'Pets', slug: 'Pets', displayNameTR: 'Evcil Hayvanlar', Icon: PawIcon },
-  { name: 'Philosophy', slug: 'Philosophy', displayNameTR: 'Felsefe', Icon: LightbulbIcon },
+  { name: 'Philosophy', slug: 'Philosophy', displayNameTR: 'Felsefe', Icon: ColumnIcon },
   { name: 'Poetry', slug: 'Poetry', displayNameTR: 'Şiir', Icon: BookIcon },
-  { name: 'Political Science', slug: 'Political Science', displayNameTR: 'Siyaset Bilimi', Icon: GlobeIcon },
-  { name: 'Psychology', slug: 'Psychology', displayNameTR: 'Psikoloji', Icon: UserIcon },
+  { name: 'Political Science', slug: 'Political Science', displayNameTR: 'Siyaset Bilimi', Icon: BuildingIcon },
+  { name: 'Psychology', slug: 'Psychology', displayNameTR: 'Psikoloji', Icon: BrainIcon },
   { name: 'Reference', slug: 'Reference', displayNameTR: 'Başvuru Kaynakları', Icon: BookIcon },
-  { name: 'Sports & Recreation', slug: 'Sports & Recreation', displayNameTR: 'Spor & Rekreasyon', Icon: StarIcon },
-  { name: 'Study Aids', slug: 'Study Aids', displayNameTR: 'Ders Çalışma Yardımcıları', Icon: BookIcon },
+  { name: 'Sports & Recreation', slug: 'Sports & Recreation', displayNameTR: 'Spor & Rekreasyon', Icon: TrophyIcon },
+  { name: 'Study Aids', slug: 'Study Aids', displayNameTR: 'Ders Çalışma Yardımcıları', Icon: NotebookIcon },
   { name: 'Travel', slug: 'Travel', displayNameTR: 'Seyahat', Icon: MapIcon },
-  { name: 'True Crime', slug: 'True Crime', displayNameTR: 'Gerçek Suç Hikayeleri', Icon: LawIcon },
+  { name: 'True Crime', slug: 'True Crime', displayNameTR: 'Gerçek Suç Hikayeleri', Icon: HandcuffsIcon },
 ];

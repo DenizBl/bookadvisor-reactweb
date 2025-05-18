@@ -1,131 +1,7 @@
-// import React, { useState } from 'react';
-// import { useNavigate, Link } from 'react-router-dom';
-// import { useAuth } from '../contexts/AuthContext';
-// import { db } from '../firebase/config';
-// import { doc, setDoc } from 'firebase/firestore';
-// import toast from 'react-hot-toast';
-
-// export default function Register() {
-//   const [email, setEmail] = useState('');
-//   const [password, setPassword] = useState('');
-//   const [confirmPassword, setConfirmPassword] = useState('');
-//   const [loading, setLoading] = useState(false);
-//   const { signup } = useAuth();
-//   const navigate = useNavigate();
-
-//   async function handleSubmit(e) {
-//     e.preventDefault();
-    
-//     if (password !== confirmPassword) {
-//       return toast.error('Şifreler eşleşmiyor!');
-//     }
-
-//     try {
-//       setLoading(true);
-//       const { user } = await signup(email, password);
-      
-//       // Kullanıcı rolünü Firestore'a kaydet
-//       await setDoc(doc(db, 'users', user.uid), {
-//         email: user.email,
-//         role: 'member', // Varsayılan rol
-//         createdAt: new Date().toISOString()
-//       });
-
-//       toast.success('Kayıt başarılı!');
-//       navigate('/');
-//     } catch (error) {
-//       toast.error('Kayıt başarısız: ' + error.message);
-//     }
-//     setLoading(false);
-//   }
-
-//   return (
-//     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-//       <div className="max-w-md w-full space-y-8">
-//         <div>
-//           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-//             Yeni Hesap Oluştur
-//           </h2>
-//         </div>
-//         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-//           <div className="rounded-md shadow-sm -space-y-px">
-//             <div>
-//               <label htmlFor="email-address" className="sr-only">
-//                 Email adresi
-//               </label>
-//               <input
-//                 id="email-address"
-//                 name="email"
-//                 type="email"
-//                 autoComplete="email"
-//                 required
-//                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-//                 placeholder="Email adresi"
-//                 value={email}
-//                 onChange={(e) => setEmail(e.target.value)}
-//               />
-//             </div>
-//             <div>
-//               <label htmlFor="password" className="sr-only">
-//                 Şifre
-//               </label>
-//               <input
-//                 id="password"
-//                 name="password"
-//                 type="password"
-//                 autoComplete="new-password"
-//                 required
-//                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-//                 placeholder="Şifre"
-//                 value={password}
-//                 onChange={(e) => setPassword(e.target.value)}
-//               />
-//             </div>
-//             <div>
-//               <label htmlFor="confirm-password" className="sr-only">
-//                 Şifre Tekrar
-//               </label>
-//               <input
-//                 id="confirm-password"
-//                 name="confirm-password"
-//                 type="password"
-//                 autoComplete="new-password"
-//                 required
-//                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-//                 placeholder="Şifre Tekrar"
-//                 value={confirmPassword}
-//                 onChange={(e) => setConfirmPassword(e.target.value)}
-//               />
-//             </div>
-//           </div>
-
-//           <div>
-//             <button
-//               type="submit"
-//               disabled={loading}
-//               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-//             >
-//               {loading ? 'Kayıt yapılıyor...' : 'Kayıt Ol'}
-//             </button>
-//           </div>
-
-//           <div className="text-sm text-center">
-//             <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
-//               Zaten hesabınız var mı? Giriş yapın
-//             </Link>
-//           </div>
-//         </form>
-//       </div>
-//     </div>
-//   );
-// } 
-
-
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext'; // AuthContext yolunuzu doğrulayın
-import { db } from '../firebase/config'; // Firebase config yolunuzu doğrulayın
-import { doc, setDoc } from 'firebase/firestore';
+import { useAuth } from '../contexts/AuthContext';
+import { createUser } from '../services/userService';
 import toast from 'react-hot-toast';
 
 // Basit bir kitap ikonu (SVG olarak)
@@ -147,13 +23,11 @@ const BookIcon = () => (
   </svg>
 );
 
-
 export default function Register() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  // Admin toggle için state (görseldeki gibi, şimdilik işlevsiz)
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(false);
   const { signup } = useAuth();
@@ -173,18 +47,17 @@ export default function Register() {
       setLoading(true);
       const { user } = await signup(email, password);
 
-      // Kullanıcı bilgilerini Firestore'a kaydet
-      await setDoc(doc(db, 'users', user.uid), {
-        uid: user.uid,
-        firstName: firstName,
-        lastName: lastName,
-        email: user.email,
-        role: isAdmin ? 'admin' : 'member', // Admin toggle'a göre rol
-        createdAt: new Date().toISOString(),
-      });
+      // Create user in Realtime Database
+      await createUser(
+        firstName,
+        lastName,
+        email,
+        user.uid,
+        isAdmin ? 'admin' : 'member'
+      );
 
       toast.success('Kayıt başarılı! Yönlendiriliyorsunuz...');
-      navigate('/'); // Veya kullanıcı profili/dashboard sayfasına
+      navigate('/');
     } catch (error) {
       console.error("Kayıt hatası:", error);
       if (error.code === 'auth/email-already-in-use') {
@@ -210,10 +83,6 @@ export default function Register() {
             BookAdvisor
           </button>
         </div>
-
-        {/* <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Yeni Hesap Oluştur
-        </h2> */}
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {/* Input alanları için container */}
@@ -308,7 +177,6 @@ export default function Register() {
               />
             </button>
           </div>
-
 
           <div>
             <button

@@ -48,7 +48,7 @@ export default function HomePage() {
 
   useEffect(() => {
     async function fetchInitialBooks() {
-      if (!searchTerm) {
+      if (!searchTerm && searchResults.length === 0) {
         const results = await googleBooksService.searchBooks('Fiction');
         setSearchResults(results.slice(0, 20));
       }
@@ -147,12 +147,12 @@ export default function HomePage() {
   };
 
   const sidebarLinks = [
-    { name: 'Home', path: '/', icon: <HomeIcon /> },
-    { name: 'Categories', path: '/categories', icon: <CategoryIcon /> },
-    { name: 'Favorite Books', path: '/favorites', icon: <HeartIcon /> },
-    { name: 'Read Books', path: '/read-books', icon: <BookOpenSidebarIcon /> },
-    { name: 'Popular Books', path: '/popular-books', icon: <TrendingUpIcon /> },
-    { name: 'Currently Reading', path: '/currently-reading', icon: <ClockIcon /> },
+    { name: 'Anasayfa', path: '/', icon: <HomeIcon /> },
+    { name: 'Kategoriler', path: '/categories', icon: <CategoryIcon /> },
+    { name: 'Favorilerim', path: '/favorites', icon: <HeartIcon /> },
+    { name: 'Okuduklarım', path: '/okuduklarim', icon: <BookOpenSidebarIcon /> },
+    { name: 'Halen Okuyorum', path: '/currently-reading', icon: <ClockIcon /> },
+    { name: 'Popüler Kitaplar', path: '/popular-books', icon: <TrendingUpIcon /> },
   ];
 
   if (currentUser) {

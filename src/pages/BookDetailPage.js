@@ -5,8 +5,9 @@ import { useParams, Link } from 'react-router-dom';
 import { googleBooksService } from '../services/googleBooksService';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase/config';
-import { collection, addDoc, query, orderBy, onSnapshot, doc, getDoc, setDoc, increment } from 'firebase/firestore';
+import { collection, addDoc, query, orderBy, onSnapshot, doc, getDoc, setDoc, increment, deleteDoc } from 'firebase/firestore';
 import Header from '../components/Header';
+import { toast } from 'react-hot-toast';
 
 // Utility to decode HTML entities
 function decodeHtmlEntities(text) {
@@ -27,6 +28,10 @@ export default function BookDetailPage() {
   const [likes, setLikes] = useState(0);
   const [hasLiked, setHasLiked] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
+  const [isCurrentlyReading, setIsCurrentlyReading] = useState(false);
+  const [isUpdatingReadingStatus, setIsUpdatingReadingStatus] = useState(false);
+  const [isFinishedReading, setIsFinishedReading] = useState(false);
+  const [isUpdatingFinishedStatus, setIsUpdatingFinishedStatus] = useState(false);
 
   useEffect(() => {
     async function fetchBook() {
@@ -87,6 +92,28 @@ export default function BookDetailPage() {
     fetchLikes();
   }, [id, currentUser]);
 
+  // Check if book is in currently reading
+  useEffect(() => {
+    const checkCurrentlyReading = async () => {
+      if (!currentUser) return;
+      
+      try {
+        const readingRef = doc(db, 'users', currentUser.uid, 'currentlyReading', id);
+        const readingDoc = await getDoc(readingRef);
+        setIsCurrentlyReading(readingDoc.exists());
+
+        // Check if book is in finished reading
+        const finishedRef = doc(db, 'users', currentUser.uid, 'finishedReading', id);
+        const finishedDoc = await getDoc(finishedRef);
+        setIsFinishedReading(finishedDoc.exists());
+      } catch (err) {
+        console.error('Error checking reading status:', err);
+      }
+    };
+
+    checkCurrentlyReading();
+  }, [id, currentUser]);
+
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (!comment.trim()) return;
@@ -141,6 +168,77 @@ export default function BookDetailPage() {
       console.error('Error updating like:', err);
     } finally {
       setIsLiking(false);
+    }
+  };
+
+  const handleCurrentlyReading = async () => {
+    if (!currentUser || isUpdatingReadingStatus) return;
+
+    setIsUpdatingReadingStatus(true);
+    const readingRef = doc(db, 'users', currentUser.uid, 'currentlyReading', id);
+
+    try {
+      if (isCurrentlyReading) {
+        // Remove from currently reading
+        await deleteDoc(readingRef);
+        setIsCurrentlyReading(false);
+        toast.success('Kitap "Halen Okunan Kitaplar" listesinden kaldırıldı');
+      } else {
+        // Add to currently reading
+        await setDoc(readingRef, {
+          id: id,
+          title: book.volumeInfo.title,
+          authors: book.volumeInfo.authors || [],
+          thumbnail: book.volumeInfo.imageLinks?.thumbnail || '',
+          addedAt: new Date(),
+        });
+        setIsCurrentlyReading(true);
+        toast.success('Kitap "Halen Okunan Kitaplar" listesine eklendi');
+      }
+    } catch (err) {
+      console.error('Error updating currently reading status:', err);
+      toast.error('Bir hata oluştu');
+    } finally {
+      setIsUpdatingReadingStatus(false);
+    }
+  };
+
+  const handleFinishedReading = async () => {
+    if (!currentUser || isUpdatingFinishedStatus) return;
+
+    setIsUpdatingFinishedStatus(true);
+    const finishedRef = doc(db, 'users', currentUser.uid, 'finishedReading', id);
+    const currentlyReadingRef = doc(db, 'users', currentUser.uid, 'currentlyReading', id);
+
+    try {
+      if (isFinishedReading) {
+        // Remove from finished reading
+        await deleteDoc(finishedRef);
+        setIsFinishedReading(false);
+        toast.success('Kitap "Okunan Kitaplar" listesinden kaldırıldı');
+      } else {
+        // Add to finished reading
+        await setDoc(finishedRef, {
+          id: id,
+          title: book.volumeInfo.title,
+          authors: book.volumeInfo.authors || [],
+          thumbnail: book.volumeInfo.imageLinks?.thumbnail || '',
+          finishedAt: new Date(),
+        });
+        setIsFinishedReading(true);
+        toast.success('Kitap "Okunan Kitaplar" listesine eklendi');
+
+        // If the book was in currently reading, remove it
+        if (isCurrentlyReading) {
+          await deleteDoc(currentlyReadingRef);
+          setIsCurrentlyReading(false);
+        }
+      }
+    } catch (err) {
+      console.error('Error updating finished reading status:', err);
+      toast.error('Bir hata oluştu');
+    } finally {
+      setIsUpdatingFinishedStatus(false);
     }
   };
 
@@ -306,6 +404,30 @@ export default function BookDetailPage() {
                 >
                   <span>{hasLiked ? '❤️' : '🤍'}</span>
                   <span>{likes} Beğeni</span>
+                </button>
+                <button
+                  onClick={handleCurrentlyReading}
+                  className={`inline-flex items-center gap-2 px-6 py-3 rounded-md transition-colors text-sm font-medium ${
+                    isCurrentlyReading 
+                      ? 'bg-green-100 text-green-600 hover:bg-green-200' 
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                  disabled={!currentUser || isUpdatingReadingStatus}
+                >
+                  <span>{isCurrentlyReading ? '📖' : '📚'}</span>
+                  <span>{isCurrentlyReading ? 'Okunuyor' : 'Okumaya Başla'}</span>
+                </button>
+                <button
+                  onClick={handleFinishedReading}
+                  className={`inline-flex items-center gap-2 px-6 py-3 rounded-md transition-colors text-sm font-medium ${
+                    isFinishedReading 
+                      ? 'bg-blue-100 text-blue-600 hover:bg-blue-200' 
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                  disabled={!currentUser || isUpdatingFinishedStatus}
+                >
+                  <span>{isFinishedReading ? '✅' : '📚'}</span>
+                  <span>{isFinishedReading ? 'Okundu' : 'Kitabı Tamamlama'}</span>
                 </button>
               </div>
             </div>

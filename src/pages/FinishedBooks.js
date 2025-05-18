@@ -5,36 +5,35 @@ import { db } from '../firebase/config';
 import { collection, onSnapshot, doc, deleteDoc } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { createUser } from '../services/userService';
 
-const CurrentlyReading = () => {
+const FinishedBooks = () => {
   const { currentUser } = useAuth();
-  const [currentlyReading, setCurrentlyReading] = useState([]);
+  const [finishedBooks, setFinishedBooks] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!currentUser) {
-      setCurrentlyReading([]);
+      setFinishedBooks([]);
       setLoading(false);
       return;
     }
 
-    const readingRef = collection(db, 'users', currentUser.uid, 'currentlyReading');
-    const unsubscribe = onSnapshot(readingRef, (snapshot) => {
-      setCurrentlyReading(snapshot.docs.map(doc => doc.data()));
+    const finishedRef = collection(db, 'users', currentUser.uid, 'finishedReading');
+    const unsubscribe = onSnapshot(finishedRef, (snapshot) => {
+      setFinishedBooks(snapshot.docs.map(doc => doc.data()));
       setLoading(false);
     });
 
     return () => unsubscribe();
   }, [currentUser]);
 
-  const handleRemoveFromCurrentlyReading = async (bookId) => {
+  const handleRemoveFromFinished = async (bookId) => {
     try {
-      await deleteDoc(doc(db, 'users', currentUser.uid, 'currentlyReading', bookId));
-      toast.success('Kitap "Halen Okunan Kitaplar" listesinden kaldırıldı');
+      await deleteDoc(doc(db, 'users', currentUser.uid, 'finishedReading', bookId));
+      toast.success('Kitap "Okuduklarım" listesinden kaldırıldı');
     } catch (error) {
       toast.error('Kitap kaldırılırken bir hata oluştu');
-      console.error('Error removing from currently reading:', error);
+      console.error('Error removing from finished books:', error);
     }
   };
 
@@ -54,23 +53,16 @@ const CurrentlyReading = () => {
       <Header />
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="bg-gradient-to-r from-red-600 to-red-700 rounded-lg shadow-lg px-4 py-2 mb-6">
-          <h1 className="text-2xl font-bold text-white">
-            Halen Okunan Kitaplar
-            <span className="text-sm font-normal text-red-100 ml-2">
-              {currentlyReading.length} kitap
-            </span>
-          </h1>
+          <h1 className="text-2xl font-bold text-white">Okuduklarım</h1>
         </div>
-        {currentlyReading.length === 0 ? (
+
+        {finishedBooks.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-600 text-lg">Henüz okumaya başladığınız kitap yok.</p>
-            <Link to="/" className="text-red-600 hover:text-red-700 mt-4 inline-block">
-              Kitap Keşfet
-            </Link>
+            <p className="text-gray-600 text-lg">Henüz okuduğunuz kitap bulunmuyor.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {currentlyReading.map((book) => (
+            {finishedBooks.map((book) => (
               <div key={book.id} className="bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 w-[250px] mx-auto">
                 <Link to={`/book/${book.id}`} className="block">
                   <div className="aspect-[2/3] w-full overflow-hidden rounded-t-lg bg-gray-50">
@@ -91,10 +83,10 @@ const CurrentlyReading = () => {
                     {book.authors?.join(', ') || 'Bilinmeyen Yazar'}
                   </p>
                   <button
-                    onClick={() => handleRemoveFromCurrentlyReading(book.id)}
+                    onClick={() => handleRemoveFromFinished(book.id)}
                     className="w-full bg-red-50 text-red-600 px-3 py-1.5 text-sm rounded-md hover:bg-red-100 transition-colors duration-300"
                   >
-                    Okumayı Bitir
+                    Listeden Kaldır
                   </button>
                 </div>
               </div>
@@ -106,4 +98,4 @@ const CurrentlyReading = () => {
   );
 };
 
-export default CurrentlyReading;
+export default FinishedBooks; 

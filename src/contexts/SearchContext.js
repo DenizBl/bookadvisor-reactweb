@@ -3,10 +3,6 @@ import { googleBooksService } from '../services/googleBooksService';
 
 const SearchContext = createContext();
 
-export function useSearch() {
-  return useContext(SearchContext);
-}
-
 export function SearchProvider({ children }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -35,8 +31,25 @@ export function SearchProvider({ children }) {
   };
 
   return (
-    <SearchContext.Provider value={{ searchTerm, setSearchTerm, searchResults, setSearchResults, isSearching, searchBooks, clearSearch }}>
+    <SearchContext.Provider value={{
+      searchTerm,
+      setSearchTerm,
+      searchResults,
+      setSearchResults,
+      isSearching,
+      setIsSearching,
+      searchBooks,
+      clearSearch
+    }}>
       {children}
     </SearchContext.Provider>
   );
+}
+
+export function useSearch() {
+  const context = useContext(SearchContext);
+  if (!context) {
+    throw new Error('useSearch must be used within a SearchProvider');
+  }
+  return context;
 } 

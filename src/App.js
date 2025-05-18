@@ -7,7 +7,7 @@ import Register from './pages/Register';
 import Home from './pages/Home';
 import AdminBooks from './pages/AdminBooks';
 import Favorites from './pages/Favorites';
-import ReadBooks from './pages/ReadBooks';
+import FinishedBooks from './pages/FinishedBooks';
 import PopularBooks from './pages/PopularBooks';
 import CategoriesPage from './pages/CategoriesPage';
 import CategoryDetailPage from './pages/CategoryDetailPage';
@@ -190,10 +190,10 @@ function App() {
     }
   />
   <Route
-    path="/read-books"
+    path="/okuduklarim"
     element={
       <PrivateRoute>
-        <ReadBooks />
+        <FinishedBooks />
       </PrivateRoute>
     }
   />
