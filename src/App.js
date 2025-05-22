@@ -16,6 +16,7 @@ import AccountPage from './pages/AccountPage';
 import AdminHome from "./pages/AdminPages/AdminHome" // Yeni Admin Ana Sayfa
 import { SearchProvider } from './contexts/SearchContext';
 import BookDetailPage from './pages/BookDetailPage';
+import AIBookRecommendation from './components/AIBookRecommendation';
 import './App.css';
 
 // Protected Route component
@@ -181,7 +182,16 @@ function App() {
     }
   />
 
+                    
                     <Route
+    path="/aibook"
+    element={
+      <PrivateRoute>
+        <AIBookRecommendation />
+      </PrivateRoute>
+    }
+  />
+   <Route
     path="/favorites"
     element={
       <PrivateRoute>

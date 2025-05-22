@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext'; // AuthContext yolunuzu doğrulayın
 import toast from 'react-hot-toast';
+import AIBookRecommendation from './AIBookRecommendation';
 
 // Basit İkonlar (SVG) - Önceki örneklerden veya kendi ikonlarınızdan
 const SearchIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>;
@@ -63,6 +64,20 @@ export default function Navbar() {
     { name: 'Kategoriler', path: '/categories', icon: <CategoryIcon /> },
   ];
 
+  // Yapay Zeka butonu için özel bileşen
+  const AIButton = () => (
+    <button
+      onClick={() => document.getElementById('ai-recommendation-button')?.click()}
+      className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-150"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 8v.01M14 8v.01M10 12v.01M14 12v.01M10 16v.01M14 16v.01" />
+      </svg>
+      <span>Yapay Zeka Önerisi</span>
+    </button>
+  );
+
   const userSpecificLinks = [];
   if (currentUser) {
     userSpecificLinks.push({ name: 'Hesabım', path: '/account', icon: <AccountIconNav /> });
@@ -103,6 +118,7 @@ export default function Navbar() {
                   {link.icon} <span className="ml-1">{link.name}</span>
                 </NavLinkItem>
               ))}
+              <AIButton />
               {userSpecificLinks.map(link => (
                  <NavLinkItem key={link.name} to={link.path} onClick={() => setIsMobileMenuOpen(false)}>
                   {link.icon} <span className="ml-1">{link.name}</span>
@@ -125,6 +141,11 @@ export default function Navbar() {
                 <SearchIcon />
               </div>
             </form>
+          </div>
+
+          {/* Gizli AI Book Recommendation butonu */}
+          <div className="hidden">
+            <AIBookRecommendation />
           </div>
 
           {/* Sağ Taraf: Kullanıcı İşlemleri (Desktop) & Mobil Menü Butonu */}
@@ -203,7 +224,20 @@ export default function Navbar() {
                 {link.icon} {link.name}
               </NavLinkItem>
             ))}
-             {userSpecificLinks.map(link => (
+            <button
+              onClick={() => {
+                document.getElementById('ai-recommendation-button')?.click();
+                setIsMobileMenuOpen(false);
+              }}
+              className="flex items-center w-full px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 8v.01M14 8v.01M10 12v.01M14 12v.01M10 16v.01M14 16v.01" />
+              </svg>
+              Yapay Zeka Önerisi
+            </button>
+            {userSpecificLinks.map(link => (
               <NavLinkItem key={link.name + "-mobile"} to={link.path} onClick={() => setIsMobileMenuOpen(false)}>
                 {link.icon} {link.name}
               </NavLinkItem>

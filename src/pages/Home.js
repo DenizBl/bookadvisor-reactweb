@@ -7,6 +7,7 @@ import { googleBooksService } from '../services/googleBooksService';
 import { useSearch } from '../contexts/SearchContext';
 import { db } from '../firebase/config';
 import { doc, setDoc, getDoc, collection, query, getDocs } from 'firebase/firestore';
+import AIBookRecommendation from '../components/AIBookRecommendation';
 
 // Icons
 const HomeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>;
@@ -45,6 +46,7 @@ export default function HomePage() {
   const [likeCounts, setLikeCounts] = useState({});
   const [mood, setMood] = useState('');
   const [isMoodSearching, setIsMoodSearching] = useState(false);
+  const [showAIChat, setShowAIChat] = useState(false);
 
   useEffect(() => {
     async function fetchInitialBooks() {
@@ -148,6 +150,7 @@ export default function HomePage() {
 
   const sidebarLinks = [
     { name: 'Anasayfa', path: '/', icon: <HomeIcon /> },
+    { name: 'Ruh Haline Göre', path: '/aibook', icon: <BookOpenSidebarIcon /> },
     { name: 'Kategoriler', path: '/categories', icon: <CategoryIcon /> },
     { name: 'Favorilerim', path: '/favorites', icon: <HeartIcon /> },
     { name: 'Okuduklarım', path: '/okuduklarim', icon: <BookOpenSidebarIcon /> },
@@ -244,6 +247,46 @@ export default function HomePage() {
               </div>
             </div>
           </section>
+
+          {/* AI Chat Button */}
+          <button
+            onClick={() => setShowAIChat(true)}
+            className="fixed bottom-6 right-6 w-14 h-14 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+            aria-label="AI Kitap Önerisi"
+          >
+            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" strokeWidth="2" />
+              <circle cx="9" cy="10" r="1.5" fill="currentColor" />
+              <circle cx="15" cy="10" r="1.5" fill="currentColor" />
+              <path strokeLinecap="round" strokeWidth="2" d="M9 16h6" />
+              <path strokeLinecap="round" strokeWidth="1.5" d="M8 7l2-2M16 7l-2-2" />
+            </svg>
+          </button>
+
+          {/* AI Chat Modal */}
+          {showAIChat && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+              <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                <div className="p-6">
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-bold text-gray-900">Yapay Zeka Kitap Önerisi</h2>
+                    <button
+                      onClick={() => setShowAIChat(false)}
+                      className="text-gray-400 hover:text-gray-500 focus:outline-none"
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  <AIBookRecommendation headers={{
+                    'Content-Type': 'application/json',
+                    'x-goog-api-key': 'AIzaSyBknoExOY5GDhOiTdIkjW6YtVhMYnGyeVU'
+                  }} />
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Mood Input Section */}
           <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
