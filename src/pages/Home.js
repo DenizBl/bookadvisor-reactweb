@@ -212,6 +212,7 @@ export default function HomePage() {
             
             {currentUser && (
               <div className={`pt-4 border-t border-gray-200 ${isSidebarCollapsed ? 'text-center' : ''}`}>
+                
                 <button
                   onClick={handleLogoutFromSidebar}
                   className={`w-full flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors duration-150 group ${
@@ -429,7 +430,10 @@ export default function HomePage() {
                       </div>
 
                       {/* Action Buttons */}
-                      <div className="mt-auto flex flex-col gap-2 border-t border-gray-200 pt-4">
+                     
+                        <div className="mt-4 flex flex-col gap-2 border-t-2 border-white pt-4">
+
+
                         <div className="flex justify-around">
                           <button
                             onClick={() => handleAddToFavorites(book)}
