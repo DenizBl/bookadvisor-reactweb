@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext'; // AuthContext yolunuzu doğrulayın
 import toast from 'react-hot-toast';
 import { useSearch } from '../contexts/SearchContext';
@@ -17,10 +17,20 @@ const UserCircleIcon = () => (
   </svg>
 );
 
+const BackIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+  </svg>
+);
+
 export default function Header() {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { searchTerm, setSearchTerm, searchBooks, isSearching } = useSearch();
+
+  // Ana sayfa olup olmadığını kontrol et
+  const isHomePage = location.pathname === '/';
 
   const handleLogout = async () => {
     try {
@@ -40,12 +50,26 @@ export default function Header() {
     }
   };
 
+  const handleBack = () => {
+    navigate(-1); // React Router'ın built-in geri gitme fonksiyonu
+  };
+
   return (
     <header className="bg-white shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Sol Taraf: Logo/Başlık */}
-          <div className="flex-shrink-0">
+          {/* Sol Taraf: Geri Tuşu (ana sayfa değilse) + Logo/Başlık */}
+          <div className="flex items-center space-x-3">
+            {!isHomePage && (
+              <button
+                onClick={handleBack}
+                className="inline-flex items-center p-2 text-white bg-red-600 hover:bg-red-700 border border-red-600 hover:border-red-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                title="Geri Git"
+              >
+                <BackIcon />
+                <span className="ml-1 font-medium text-sm hidden sm:block">Geri</span>
+              </button>
+            )}
             <Link to="/" className="text-2xl font-bold text-red-600 hover:text-red-700">
               Book Advisor
             </Link>

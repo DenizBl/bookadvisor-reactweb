@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { googleBooksService } from '../services/googleBooksService';
+import { Link } from 'react-router-dom';
+import Header from './Header';
 
 const AIBookRecommendation = () => {
   const [mood, setMood] = useState('');
@@ -127,7 +129,13 @@ const AIBookRecommendation = () => {
   };
 
   return (
-    <div className="space-y-6 max-w-3xl mx-auto p-6">
+    <div>
+      <Header />
+      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div className="bg-gradient-to-r from-red-600 to-red-700 rounded-lg shadow-lg px-4 py-2 mb-6">
+          <h1 className="text-2xl font-bold text-white">Ruh Haline Göre Kitap Önerisi</h1>
+        </div>
+        <div className="space-y-6 max-w-3xl mx-auto p-6">
       <form onSubmit={handleSubmit} className="space-y-4">
         <label htmlFor="mood" className="block text-sm font-medium text-gray-700">
           Şu anki ruh halinizi veya ne hissettiğinizi yazın:
@@ -180,7 +188,11 @@ const AIBookRecommendation = () => {
                 const info = book.volumeInfo;
                 const coverUrl = getBookCover(info);
                 return (
-                  <div key={book.id} className="bg-white rounded-lg shadow p-4 flex gap-4">
+                  <Link 
+                    key={book.id} 
+                    to={`/book/${book.id}`}
+                    className="bg-white rounded-lg shadow p-4 flex gap-4 hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1"
+                  >
                     <div className="w-24 h-36 flex-shrink-0">
                       <img
                         src={coverUrl}
@@ -189,7 +201,7 @@ const AIBookRecommendation = () => {
                       />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-md font-semibold text-gray-900">{info.title}</h3>
+                      <h3 className="text-md font-semibold text-gray-900 hover:text-red-600 transition-colors duration-300">{info.title}</h3>
                       <p className="text-sm text-gray-700">
                         {info.authors ? info.authors.join(', ') : 'Yazar bilgisi yok'}
                       </p>
@@ -197,12 +209,14 @@ const AIBookRecommendation = () => {
                         {info.description ? info.description : 'Açıklama mevcut değil'}
                       </p>
                     </div>
-                  </div>
+                  </Link>
                 );
               })}
           </div>
         </div>
       )}
+        </div>
+      </div>
     </div>
   );
 };
