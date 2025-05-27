@@ -8,6 +8,7 @@ import { useSearch } from '../contexts/SearchContext';
 import { db } from '../firebase/config';
 import { doc, setDoc, getDoc, collection, query, getDocs, deleteDoc } from 'firebase/firestore';
 import AIBookRecommendation from '../components/AIBookRecommendation';
+import Lottie from 'lottie-react';
 
 // Icons
 const HomeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="currentColor" viewBox="0 0 24 24"><path d="M11.47 3.84a.75.75 0 011.06 0l7.5 7.5a.75.75 0 01-1.06 1.06L12 5.43 5.03 12.4a.75.75 0 01-1.06-1.06l7.5-7.5z"/><path d="M12 2.25a.75.75 0 01.53.22l8.25 8.25a.75.75 0 01-.53 1.28H18v6.75a3 3 0 01-3 3H9a3 3 0 01-3-3V12H3.75a.75.75 0 01-.53-1.28L11.47 2.47a.75.75 0 01.53-.22z"/></svg>;
@@ -56,17 +57,81 @@ export default function HomePage() {
   const [isMoodSearching, setIsMoodSearching] = useState(false);
   const [showAIChat, setShowAIChat] = useState(false);
   const [userFavorites, setUserFavorites] = useState(new Set());
+  const [adminBooks, setAdminBooks] = useState([]);
+  const [lottieAnimationData, setLottieAnimationData] = useState(null);
+
+  // Fetch Lottie animation data
+  useEffect(() => {
+    const fetchLottieAnimation = async () => {
+      try {
+        const response = await fetch('https://assets9.lottiefiles.com/packages/lf20_1pxqjqps.json');
+        const animationData = await response.json();
+        setLottieAnimationData(animationData);
+      } catch (error) {
+        console.error('Error loading Lottie animation:', error);
+      }
+    };
+
+    fetchLottieAnimation();
+  }, []);
+
+  // Fetch admin books from Firestore
+  useEffect(() => {
+    const fetchAdminBooks = async () => {
+      try {
+        const booksRef = collection(db, 'books');
+        const booksSnapshot = await getDocs(booksRef);
+        const adminBooksData = [];
+        
+        booksSnapshot.forEach((doc) => {
+          const bookData = doc.data();
+          // Convert to Google Books API format for consistency
+          adminBooksData.push({
+            id: doc.id,
+            volumeInfo: {
+              title: bookData.title || 'Untitled',
+              authors: bookData.author ? [bookData.author] : ['Unknown Author'],
+              description: bookData.description || 'No description available',
+              imageLinks: {
+                thumbnail: bookData.imageUrl || bookData.thumbnail || '/api/placeholder/128/192'
+              },
+              publishedDate: bookData.publishedDate || new Date().getFullYear().toString(),
+              categories: bookData.targetAudience ? [bookData.targetAudience] : ['Fiction'],
+              industryIdentifiers: bookData.isbn ? [{ type: 'ISBN', identifier: bookData.isbn }] : []
+            },
+            isAdminBook: true // Flag to identify admin books
+          });
+        });
+        
+        setAdminBooks(adminBooksData);
+      } catch (error) {
+        console.error('Error fetching admin books:', error);
+      }
+    };
+
+    fetchAdminBooks();
+  }, []);
 
   useEffect(() => {
     async function fetchInitialBooks() {
       if (!searchTerm && searchResults.length === 0) {
-        const results = await googleBooksService.searchBooks('Fiction');
-        setSearchResults(results.slice(0, 20));
+        const googleResults = await googleBooksService.searchBooks('Fiction');
+        
+        // Combine admin books with Google Books results
+        const combinedResults = [
+          ...adminBooks,
+          ...googleResults.slice(0, 20 - adminBooks.length) // Ensure total doesn't exceed 20
+        ];
+        
+        setSearchResults(combinedResults);
       }
     }
-    fetchInitialBooks();
+    
+    if (adminBooks.length >= 0) { // Wait for admin books to load
+      fetchInitialBooks();
+    }
     // eslint-disable-next-line
-  }, []);
+  }, [adminBooks]);
 
   useEffect(() => {
     const fetchUserFavorites = async () => {
@@ -295,19 +360,40 @@ export default function HomePage() {
             </div>
           </section>
 
-          {/* AI Chat Button */}
+          {/* AI Chat Button with Lottie Animation */}
           <button
             onClick={() => setShowAIChat(true)}
-            className="fixed bottom-6 right-6 w-14 h-14 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+            className="fixed bottom-0 right-0 w-60 h-60 bg-transparent hover:bg-green-300 hover:bg-opacity-50 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-105 focus:outline-none group z-50"
             aria-label="AI Kitap Önerisi"
           >
-            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="9" strokeWidth="2" />
-              <circle cx="9" cy="10" r="1.5" fill="currentColor" />
-              <circle cx="15" cy="10" r="1.5" fill="currentColor" />
-              <path strokeLinecap="round" strokeWidth="2" d="M9 16h6" />
-              <path strokeLinecap="round" strokeWidth="1.5" d="M8 7l2-2M16 7l-2-2" />
-            </svg>
+            <div className="relative w-52 h-52 flex items-center justify-center">
+              {lottieAnimationData ? (
+                <Lottie 
+                  animationData={lottieAnimationData}
+                  loop={true}
+                  autoplay={true}
+                  style={{ 
+                    width: '100%', 
+                    height: '100%'
+                  }}
+                  className="group-hover:scale-110 transition-transform duration-200"
+                />
+              ) : (
+                // Fallback loading state
+                <div className="animate-pulse">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v11.494m0 0a8.485 8.485 0 011.023-11.494M12 17.747a8.485 8.485 0 01-11.023 0M12 6.253c1.693 0 3.304.54 4.622 1.514C17.94 8.728 19.25 9.9 20 11.253m-16 0c.75-1.353 2.06-2.525 3.378-3.486C8.696 6.792 10.307 6.253 12 6.253z" />
+                  </svg>
+                </div>
+              )}
+            </div>
+            
+            
+            {/* Hover Tooltip */}
+            <div className="absolute bottom-full right-0 mb-2 px-3 py-1 bg-red-600 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap shadow-lg">
+              AI Kitap Önerisi Al
+              <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-red-600"></div>
+            </div>
           </button>
 
           {/* AI Chat Modal */}
@@ -337,25 +423,25 @@ export default function HomePage() {
 
           {/* Mood Input Section */}
           <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-            <div className="bg-gradient-to-br from-red-50 to-pink-50 rounded-2xl shadow-xl p-8 border border-red-100">
+            <div className="bg-gradient-to-br from-cyan-400 to-green-400 rounded-2xl shadow-xl p-8 border border-cyan-200">
               <div className="max-w-3xl mx-auto">
-                <div className="text-center mb-8">
-                  <h2 className="text-3xl font-bold text-gray-800 mb-3">How are you feeling today?</h2>
-                  <p className="text-lg text-gray-600">
-                    Let us help you find the perfect book for your mood
-                  </p>
-                </div>
+                                  <div className="text-center mb-8">
+                    <h2 className="text-3xl font-bold text-white mb-3 drop-shadow-lg">How are you feeling today?</h2>
+                    <p className="text-lg text-white/90 drop-shadow">
+                      Let us help you find the perfect book for your mood
+                    </p>
+                  </div>
                 
                 <form onSubmit={handleMoodSearch} className="space-y-6">
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={mood}
-                      onChange={(e) => setMood(e.target.value)}
-                      placeholder="Enter your mood (e.g., happy, sad, stressed)"
-                      className="w-full px-6 py-4 text-lg border-2 border-red-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white/80 backdrop-blur-sm shadow-sm transition-all duration-200"
-                      list="mood-suggestions"
-                    />
+                                      <div className="relative">
+                      <input
+                        type="text"
+                        value={mood}
+                        onChange={(e) => setMood(e.target.value)}
+                        placeholder="Enter your mood (e.g., happy, sad, stressed)"
+                        className="w-full px-6 py-4 text-lg border-2 border-white/30 rounded-xl focus:ring-2 focus:ring-white focus:border-white bg-white/90 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-600"
+                        list="mood-suggestions"
+                      />
                     <datalist id="mood-suggestions">
                       {Object.keys(moodToCategory).map((mood) => (
                         <option key={mood} value={mood} />
@@ -371,8 +457,8 @@ export default function HomePage() {
                         onClick={() => setMood(suggestedMood)}
                         className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 transform hover:scale-105 ${
                           mood === suggestedMood
-                            ? 'bg-red-600 text-white shadow-md'
-                            : 'bg-white text-gray-700 hover:bg-red-50 border border-red-200'
+                            ? 'bg-white text-green-600 shadow-md font-semibold'
+                            : 'bg-white/80 text-gray-700 hover:bg-white border border-white/50'
                         }`}
                       >
                         {suggestedMood.charAt(0).toUpperCase() + suggestedMood.slice(1)}
@@ -384,7 +470,22 @@ export default function HomePage() {
                     <button
                       type="submit"
                       disabled={isMoodSearching}
-                      className="group relative px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 text-white font-semibold rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:transform-none disabled:hover:shadow-lg"
+                      className="group relative px-8 py-4 bg-cyan-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:transform-none disabled:hover:shadow-lg border-2 border-cyan-600"
+                      style={{
+                        backgroundColor: '#0e7490', // cyan-700
+                        color: 'white',
+                        borderColor: '#0891b2' // cyan-600
+                      }}
+                      onMouseEnter={(e) => {
+                        e.target.style.backgroundColor = 'white';
+                        e.target.style.color = '#0e7490';
+                        e.target.style.borderColor = '#0e7490';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.backgroundColor = '#0e7490';
+                        e.target.style.color = 'white';
+                        e.target.style.borderColor = '#0891b2';
+                      }}
                     >
                       <span className="relative z-10 flex items-center gap-2">
                         {isMoodSearching ? (
@@ -410,7 +511,7 @@ export default function HomePage() {
                 </form>
 
                 <div className="mt-8 text-center">
-                  <p className="text-gray-600">
+                  <p className="text-white/80 drop-shadow">
                     We'll recommend books that match your current mood and help you feel better.
                   </p>
                 </div>
@@ -426,33 +527,56 @@ export default function HomePage() {
                 <span className="text-gray-500">{searchResults.length} books found</span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {searchResults.map((book) => (
-                  <div key={book.id} className="bg-[#f7e8e6] rounded-lg shadow-md hover:shadow-xl transition-all duration-300 min-h-[265px] flex flex-col transform hover:-translate-y-1 hover:scale-[1.02] group">
+                {searchResults.map((book, index) => {
+                  // Category colors like in CategoriesPage
+                  const categoryColors = [
+                    '#9147ff', '#b068e9', '#1e3a8a', '#b91c1c', '#4f46e5', '#ec4899', 
+                    '#7e22ce', '#0ea5e9', '#7c3aed', '#059669', '#d946ef', '#f59e0b',
+                    '#8b5cf6', '#06b6d4', '#10b981', '#f97316', '#ef4444', '#84cc16'
+                  ];
+                  const backgroundColor = categoryColors[index % categoryColors.length];
+                  
+                  return (
+                  <div key={book.id} className="rounded-lg shadow-md hover:shadow-xl transition-all duration-300 min-h-[265px] flex flex-col transform hover:-translate-y-1 hover:scale-[1.02] group relative" style={{ backgroundColor }}>
+                    {/* Admin Badge */}
+                    {book.isAdminBook && (
+                      <div className="absolute -top-2 -right-2 z-10">
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                          </svg>
+                          Featured
+                        </span>
+                      </div>
+                    )}
                     <div className="flex flex-col p-4 h-full">
                       {/* Top Section - Book Info */}
                       <div className="flex mb-3">
                         {/* Book Cover */}
-                        <Link to={`/book/${book.id}`} className="w-20 h-28 flex-shrink-0 block">
+                        <Link to={`/book/${book.id}`} className="w-20 h-28 flex-shrink-0 block relative">
                           <img
                             src={book.volumeInfo.imageLinks?.thumbnail || 'https://via.placeholder.com/150x200'}
                             alt={book.volumeInfo.title}
                             className="w-full h-full object-cover rounded-md shadow-sm group-hover:shadow-md transition-all duration-300"
                           />
+                          {book.isAdminBook && (
+                            <div className="absolute inset-0 ring-2 ring-green-400 ring-opacity-50 rounded-md"></div>
+                          )}
                         </Link>
                         
                         {/* Book Details */}
                         <div className="ml-3 flex-1 flex flex-col">
-                          <h3 className="text-sm font-semibold text-gray-900 mb-1 line-clamp-2 group-hover:text-red-600 transition-colors duration-300">
+                          <h3 className="text-sm font-semibold text-white mb-1 line-clamp-2 group-hover:text-yellow-200 transition-colors duration-300 drop-shadow-lg">
                             {book.volumeInfo.title}
                           </h3>
-                          <p className="text-xs text-gray-600 mb-2 line-clamp-1">
+                          <p className="text-xs text-white/80 mb-2 line-clamp-1 drop-shadow">
                             {book.volumeInfo.authors?.join(', ') || 'Unknown Author'}
                           </p>
                           
                           {/* Rating */}
                           <div className="flex items-center mb-2">
-                            <span className="text-yellow-400 text-sm">★</span>
-                            <span className="ml-1 text-xs text-gray-600">
+                            <span className="text-yellow-300 text-sm drop-shadow">★</span>
+                            <span className="ml-1 text-xs text-white/70 drop-shadow">
                               {book.volumeInfo.averageRating ? 
                                 `${book.volumeInfo.averageRating.toFixed(1)}` : 
                                 'No rating'}
@@ -460,7 +584,7 @@ export default function HomePage() {
                           </div>
 
                           {/* Additional Details */}
-                          <div className="text-xs text-gray-500 flex-1 mb-1 leading-tight">
+                          <div className="text-xs text-white/60 flex-1 mb-1 leading-tight drop-shadow">
                             {book.volumeInfo.publishedDate && <p className="mb-[2px]">{new Date(book.volumeInfo.publishedDate).getFullYear()}</p>}
                             {book.volumeInfo.pageCount && <p className="mb-0">{book.volumeInfo.pageCount} pages</p>}
                           </div>
@@ -468,7 +592,7 @@ export default function HomePage() {
                       </div>
 
                       {/* Bottom Section - Action Buttons */}
-                      <div className="mt-auto pt-3 border-t border-white/50">
+                      <div className="mt-auto pt-3 border-t border-white/30">
                         {/* Main Actions */}
                         <div className="flex gap-2 mb-2">
                           <button
@@ -524,7 +648,8 @@ export default function HomePage() {
                       </div>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}

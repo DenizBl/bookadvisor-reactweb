@@ -24,7 +24,7 @@ const BackIcon = () => (
 );
 
 export default function Header() {
-  const { currentUser, logout } = useAuth();
+  const { currentUser, logout, userRole } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { searchTerm, setSearchTerm, searchBooks, isSearching } = useSearch();
@@ -133,6 +133,32 @@ export default function Header() {
           <div className="flex items-center space-x-4">
             {currentUser ? (
               <>
+                {/* Admin Kullanıcı İçin Özel Linkler */}
+                {userRole === 'admin' && (
+                  <div className="flex items-center space-x-2">
+                    <Link
+                      to="/admin"
+                      className="px-2 py-1.5 text-xs font-medium text-white rounded-md transition-colors duration-200 hidden sm:block"
+                      style={{backgroundColor: '#059669'}}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = '#047857'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = '#059669'}
+                      title="Admin Paneli"
+                    >
+                      Admin
+                    </Link>
+                    <Link
+                      to="/admin/add-book"
+                      className="px-2 py-1.5 text-xs font-medium text-white rounded-md transition-colors duration-200"
+                      style={{backgroundColor: '#dc2626'}}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = '#b91c1c'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = '#dc2626'}
+                      title="Kitap Ekle"
+                    >
+                      <span className="hidden sm:inline">+ Kitap</span>
+                      <span className="sm:hidden">+</span>
+                    </Link>
+                  </div>
+                )}
                 <span className="text-sm text-gray-600 hidden md:block">{currentUser.email}</span>
                 <Link to="/account" title="Hesabım" className="hover:opacity-75 transition-opacity duration-200">
                   <UserCircleIcon />

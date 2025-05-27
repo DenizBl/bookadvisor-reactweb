@@ -6,10 +6,12 @@ import Header from '../../components/Header'; // Admin sayfası da Header'ı kul
 // Admin'e özel ikonlar eklenebilir
 const BookManagementIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>;
 const UserManagementIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 016-6h6a6 6 0 016 6v1h-3" /></svg>;
+const AddBookIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>;
 
 export default function AdminHome() {
   const adminSidebarLinks = [
     { name: 'Kitap Yönetimi', path: '/admin/books', icon: <BookManagementIcon /> }, // Bu zaten var
+    { name: 'Kitap Ekle', path: '/admin/add-book', icon: <AddBookIcon /> }, // Yeni kitap ekleme linki
     { name: 'Kullanıcı Yönetimi', path: '/admin/users', icon: <UserManagementIcon /> }, // Yeni örnek link
     // Diğer admin linkleri...
   ];

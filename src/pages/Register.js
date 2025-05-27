@@ -47,17 +47,25 @@ export default function Register() {
       setLoading(true);
       const { user } = await signup(email, password);
 
+      const userRole = isAdmin ? 'admin' : 'member';
+
       // Create user in Realtime Database
       await createUser(
         firstName,
         lastName,
         email,
         user.uid,
-        isAdmin ? 'admin' : 'member'
+        userRole
       );
 
       toast.success('Kayıt başarılı! Yönlendiriliyorsunuz...');
-      navigate('/');
+      
+      // Role'e göre yönlendirme
+      if (userRole === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
     } catch (error) {
       console.error("Kayıt hatası:", error);
       if (error.code === 'auth/email-already-in-use') {

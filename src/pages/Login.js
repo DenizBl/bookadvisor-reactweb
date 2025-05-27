@@ -132,7 +132,6 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
-  const { userRole } = useAuth(); 
   const navigate = useNavigate();
 
 
@@ -147,27 +146,36 @@ export default function Login() {
 
     try {
       setLoading(true);
-      await login(email, password);
-      toast.success('Giriş başarılı! Yönlendiriliyorsunuz...');
-
+      const { user } = await login(email, password);
       
-  setTimeout(() => {
-    if (userRole === 'admin') {
-      navigate('/admin');
-    } else {
-      navigate('/');
-    }
-  }, 10);  // küçük bir gecikme ile role yüklenmesi beklenebilir
-
-      // navigate('/'); // Ana sayfaya veya dashboard'a yönlendir
+      // Firebase'den kullanıcı rolünü al
+      const { doc, getDoc } = await import('firebase/firestore');
+      const { db } = await import('../firebase/config');
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        const role = userData.role;
+        
+        toast.success('Giriş başarılı! Yönlendiriliyorsunuz...');
+        
+        // Role'e göre yönlendirme
+        if (role === 'admin') {
+          navigate('/admin');
+        } else {
+          navigate('/');
+        }
+      } else {
+        toast.success('Giriş başarılı! Yönlendiriliyorsunuz...');
+        navigate('/');
+      }
     } catch (error) {
       console.error("Giriş hatası:", error);
       if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
         toast.error('Email veya şifre hatalı.');
       } else if (error.code === 'auth/invalid-email') {
         toast.error('Geçersiz email formatı.');
-      }
-      else {
+      } else {
         toast.error('Giriş başarısız. Lütfen tekrar deneyin.');
       }
     }

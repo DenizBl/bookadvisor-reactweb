@@ -3,7 +3,7 @@ import { db } from '../firebase/config';
 import { collection, addDoc, updateDoc, doc } from 'firebase/firestore';
 import toast from 'react-hot-toast';
 
-export default function BookForm({ book, onSuccess }) {
+export default function BookForm({ book, onSuccess, onCancel }) {
   const [formData, setFormData] = useState({
     title: book?.title || '',
     description: book?.description || '',
@@ -127,11 +127,21 @@ export default function BookForm({ book, onSuccess }) {
         />
       </div>
 
-      <div>
+      <div className="flex space-x-3">
+        {onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={loading}
+            className="flex-1 flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            İptal
+          </button>
+        )}
         <button
           type="submit"
           disabled={loading}
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className={`${onCancel ? 'flex-1' : 'w-full'} flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
         >
           {loading ? 'Kaydediliyor...' : (book ? 'Güncelle' : 'Ekle')}
         </button>
