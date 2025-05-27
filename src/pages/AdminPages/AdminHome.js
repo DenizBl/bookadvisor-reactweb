@@ -10,9 +10,10 @@ const AddBookIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5
 
 export default function AdminHome() {
   const adminSidebarLinks = [
+    { name: 'Ana Panel', path: '/admin', icon: <BookManagementIcon /> }, // Ana admin panel
     { name: 'Kitap Yönetimi', path: '/admin/books', icon: <BookManagementIcon /> }, // Bu zaten var
     { name: 'Kitap Ekle', path: '/admin/add-book', icon: <AddBookIcon /> }, // Yeni kitap ekleme linki
-    { name: 'Kullanıcı Yönetimi', path: '/admin/users', icon: <UserManagementIcon /> }, // Yeni örnek link
+    { name: 'Kullanıcı Yönetimi', path: '/admin/users', icon: <UserManagementIcon /> }, // Kullanıcı yönetimi
     // Diğer admin linkleri...
   ];
 

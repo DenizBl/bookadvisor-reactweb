@@ -148,13 +148,14 @@ export default function Login() {
       setLoading(true);
       const { user } = await login(email, password);
       
-      // Firebase'den kullanıcı rolünü al
-      const { doc, getDoc } = await import('firebase/firestore');
-      const { db } = await import('../firebase/config');
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      // Firebase Realtime Database'den kullanıcı rolünü al
+      const { ref, get } = await import('firebase/database');
+      const { database } = await import('../firebase/config');
+      const userRef = ref(database, 'users/' + user.uid);
+      const snapshot = await get(userRef);
       
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
+      if (snapshot.exists()) {
+        const userData = snapshot.val();
         const role = userData.role;
         
         toast.success('Giriş başarılı! Yönlendiriliyorsunuz...');

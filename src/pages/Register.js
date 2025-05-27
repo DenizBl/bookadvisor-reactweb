@@ -60,8 +60,8 @@ export default function Register() {
 
       toast.success('Kayıt başarılı! Yönlendiriliyorsunuz...');
       
-      // Role'e göre yönlendirme
-      if (userRole === 'admin') {
+      // Role'e göre yönlendirme - isAdmin state'ini kullan
+      if (isAdmin) {
         navigate('/admin');
       } else {
         navigate('/');

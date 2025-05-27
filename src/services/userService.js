@@ -1,8 +1,8 @@
-import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../firebase/config';
+import { ref, set, get, update } from 'firebase/database';
+import { database } from '../firebase/config';
 
 /**
- * Creates a new user in Firestore
+ * Creates a new user in Firebase Realtime Database
  * @param {string} firstName - User's first name
  * @param {string} lastName - User's last name
  * @param {string} email - User's email address
@@ -24,44 +24,45 @@ export const createUser = async (firstName, lastName, email, userId, role) => {
       boardIds: [],
    };
 
-   await setDoc(doc(db, 'users', userId), userData);
+   // Realtime Database'e kaydetmek için ref ve set kullanıyoruz
+   await set(ref(database, 'users/' + userId), userData);
    return userData;
 };
 
 /**
- * Updates an existing user's information in Firestore
+ * Updates an existing user's information in Firebase Realtime Database
  * @param {string} userId - User's unique ID
  * @param {Object} updateData - Object containing the fields to update
  * @returns {Promise<Object>} The updated user data
  */
 export const updateUser = async (userId, updateData) => {
-   const userRef = doc(db, 'users', userId);
+   const userRef = ref(database, 'users/' + userId);
    
    // If firstName or lastName is being updated, update firstLast as well
    if (updateData.firstName || updateData.lastName) {
-      const snapshot = await getDoc(userRef);
-      const currentData = snapshot.data();
+      const snapshot = await get(userRef);
+      const currentData = snapshot.val();
       const newFirstName = updateData.firstName || currentData.firstName;
       const newLastName = updateData.lastName || currentData.lastName;
       updateData.firstLast = `${newFirstName} ${newLastName}`.toLowerCase();
    }
 
-   await updateDoc(userRef, updateData);
+   await update(userRef, updateData);
    return updateData;
 };
 
 /**
- * Gets a user's data from Firestore
+ * Gets a user's data from Firebase Realtime Database
  * @param {string} userId - User's unique ID
  * @returns {Promise<Object>} The user's data
  */
 export const getUser = async (userId) => {
-   const userRef = doc(db, 'users', userId);
-   const snapshot = await getDoc(userRef);
+   const userRef = ref(database, 'users/' + userId);
+   const snapshot = await get(userRef);
    
    if (!snapshot.exists()) {
       throw new Error('User not found');
    }
    
-   return snapshot.data();
+   return snapshot.val();
 }; 

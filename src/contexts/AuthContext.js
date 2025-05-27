@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { auth, db } from '../firebase/config';
+import { auth, database } from '../firebase/config';
 import { 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
   signOut, 
   onAuthStateChanged 
 } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { ref, get } from 'firebase/database';
 
 const AuthContext = createContext();
 
@@ -32,36 +32,23 @@ export function AuthProvider({ children }) {
   }
 
   async function getUserRole(uid) {
-    const userDoc = await getDoc(doc(db, 'users', uid));
-    if (userDoc.exists()) {
-      return userDoc.data().role;
+    const userRef = ref(database, 'users/' + uid);
+    const snapshot = await get(userRef);
+    if (snapshot.exists()) {
+      return snapshot.val().role;
     }
     return null;
   }
 
-  // useEffect(() => {
-  //   const unsubscribe = onAuthStateChanged(auth, async (user) => {
-  //     setCurrentUser(user);
-  //     if (user) {
-  //       const role = await getUserRole(user.uid);
-  //       setUserRole(role);
-  //     } else {
-  //       setUserRole(null);
-  //     }
-  //     setLoading(false);
-  //   });
-
-  //   return unsubscribe;
-  // }, []);
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async user => {
       setCurrentUser(user);
 
       if (user) {
-        const docRef = doc(db, 'users', user.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
+        const userRef = ref(database, 'users/' + user.uid);
+        const snapshot = await get(userRef);
+        if (snapshot.exists()) {
+          const data = snapshot.val();
           setUserRole(data.role); // Örn: "admin" veya "member"
         }
       } else {

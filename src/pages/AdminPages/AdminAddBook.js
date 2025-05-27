@@ -19,7 +19,7 @@ export default function AdminAddBook() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <Header />
+      
       
       <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         {/* Sayfa Başlığı */}
@@ -68,7 +68,8 @@ export default function AdminAddBook() {
             <li>• Kitap başlığını net ve doğru şekilde yazın</li>
             <li>• Yazar adını tam olarak girin</li>
             <li>• Uygun kategori seçin</li>
-            <li>• Kitap kapağı için kaliteli bir görsel URL'i kullanın</li>
+            <li>• Kitap kapağı için dosya yükleyebilir veya URL girebilirsiniz</li>
+            <li>• Resim dosyaları JPG, PNG formatında ve maksimum 5MB olmalıdır</li>
             <li>• Açıklama kısmını detaylı ama öz tutun</li>
           </ul>
         </div>

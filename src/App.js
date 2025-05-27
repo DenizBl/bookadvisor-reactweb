@@ -13,8 +13,10 @@ import CategoriesPage from './pages/CategoriesPage';
 import CategoryDetailPage from './pages/CategoryDetailPage';
 import CurrentlyReading from './pages/CurrentlyReading';
 import AccountPage from './pages/AccountPage';
-import AdminHome from "./pages/AdminPages/AdminHome" // Yeni Admin Ana Sayfa
+import AdminLayout from "./pages/AdminPages/AdminLayout" // Admin Layout
+import AdminDashboard from "./pages/AdminPages/AdminDashboard" // Admin Dashboard
 import AdminAddBook from "./pages/AdminPages/AdminAddBook" // Admin Kitap Ekleme Sayfası
+import AdminUserManagement from "./pages/AdminPages/AdminUserManagement" // Admin Kullanıcı Yönetimi
 import { SearchProvider } from './contexts/SearchContext';
 import BookDetailPage from './pages/BookDetailPage';
 import AIBookRecommendation from './components/AIBookRecommendation';
@@ -136,36 +138,21 @@ function App() {
                       </PrivateRoute>
                     }
                   />
-                  {/* Admin routes */}
-           
-
-                  {/* YENİ ADMIN ANA ROTASI */}
+                  {/* Admin routes with nested layout */}
                   <Route
-                    path="/admin" // Veya /admin/home, /admin/dashboard
+                    path="/admin"
                     element={
                       <PrivateRoute requiredRole="admin">
-                        <AdminHome />
+                        <AdminLayout />
                       </PrivateRoute>
                     }
-                  />
-                  {/* /admin/books rotası AdminHome içinde bir link olabilir veya burada kalabilir */}
-                  {/* Eğer AdminHome'un Outlet'ini kullanacaksanız bu rota AdminHome'un altına taşınabilir */}
-                  <Route
-                    path="/admin/books"
-                    element={
-                      <PrivateRoute requiredRole="admin">
-                        <AdminBooks />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/add-book"
-                    element={
-                      <PrivateRoute requiredRole="admin">
-                        <AdminAddBook />
-                      </PrivateRoute>
-                    }
-                  />
+                  >
+                    {/* Nested admin routes */}
+                    <Route index element={<AdminDashboard />} />
+                    <Route path="users" element={<AdminUserManagement />} />
+                    <Route path="books" element={<AdminBooks />} />
+                    <Route path="add-book" element={<AdminAddBook />} />
+                  </Route>
                   {/* Diğer Admin Alt Rotaları (eğer AdminHome içinde Outlet kullanılıyorsa):
                   <Route path="/admin" element={<PrivateRoute requiredRole="admin"><AdminHome /></PrivateRoute>}>
                     <Route path="books" element={<AdminBooks />} />
