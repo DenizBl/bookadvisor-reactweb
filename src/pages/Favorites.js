@@ -46,9 +46,9 @@ const Favorites = () => {
   const handleRemoveFromFavorites = async (bookId) => {
     try {
       await deleteDoc(doc(db, 'users', currentUser.uid, 'favorites', bookId));
-      toast.success('Kitap favorilerden kaldırıldı');
+      toast.success('Kitap Listemden kaldırıldı');
     } catch (error) {
-      toast.error('Favorilerden kaldırılırken bir hata oluştu');
+      toast.error('Limstemden kaldırılırken bir hata oluştu');
       console.error('Error removing from favorites:', error);
     }
   };
@@ -57,9 +57,9 @@ const Favorites = () => {
     <div>
       <Header />
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="bg-gradient-to-r from-red-600 to-red-700 rounded-lg shadow-lg px-4 py-2 mb-6">
+        <div className="rounded-lg shadow-lg px-4 py-2 mb-6" style={{background: '#b91c1c'}}>
           <h1 className="text-2xl font-bold text-white">
-            Favori Kitaplar
+            Listem
             <span className="text-sm font-normal text-red-100 ml-2">
               {favorites.length} kitap
             </span>
@@ -68,7 +68,7 @@ const Favorites = () => {
         {loading ? (
           <div className="text-center text-gray-500">Yükleniyor...</div>
         ) : favorites.length === 0 ? (
-          <div className="text-center text-gray-500">Henüz favori kitap eklemediniz.</div>
+          <div className="text-center text-gray-500">Henüz listenize kitap eklemediniz.</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {favorites.map((book) => (
@@ -99,7 +99,7 @@ const Favorites = () => {
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
-                    Favorilerden Kaldır
+                    Listemden Kaldır
                   </button>
                   <Link
                     to={`/book/${book.id}`}

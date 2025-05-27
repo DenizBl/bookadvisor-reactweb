@@ -12,7 +12,7 @@ const SearchIcon = () => (
 );
 
 const UserCircleIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-gray-600 hover:text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-gray-600" style={{color: '#6b7280'}} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
     <path strokeLinecap="round" strokeLinejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
   </svg>
 );
@@ -63,14 +63,28 @@ export default function Header() {
             {!isHomePage && (
               <button
                 onClick={handleBack}
-                className="inline-flex items-center p-2 text-white bg-red-600 hover:bg-red-700 border border-red-600 hover:border-red-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                className="inline-flex items-center p-2 text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                style={{
+                  backgroundColor: '#b91c1c',
+                  borderColor: '#b91c1c'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = '#991b1b';
+                  e.target.style.borderColor = '#991b1b';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = '#b91c1c';
+                  e.target.style.borderColor = '#b91c1c';
+                }}
                 title="Geri Git"
               >
                 <BackIcon />
                 <span className="ml-1 font-medium text-sm hidden sm:block">Geri</span>
               </button>
             )}
-            <Link to="/" className="text-2xl font-bold text-red-600 hover:text-red-700">
+            <Link to="/" className="text-2xl font-bold transition-colors duration-200" style={{color: '#b91c1c'}}
+                  onMouseEnter={(e) => e.target.style.color = '#991b1b'}
+                  onMouseLeave={(e) => e.target.style.color = '#b91c1c'}>
               Book Advisor
             </Link>
           </div>
@@ -85,7 +99,15 @@ export default function Header() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Kitap, yazar veya tür ara..."
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-l-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-red-500 focus:border-red-500 sm:text-sm"
+                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-l-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 sm:text-sm"
+                style={{'--focus-ring-color': '#b91c1c', '--focus-border-color': '#b91c1c'}}
+                onFocus={(e) => {
+                  e.target.style.ringColor = '#b91c1c';
+                  e.target.style.borderColor = '#b91c1c';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#d1d5db';
+                }}
                 disabled={isSearching}
               />
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -94,8 +116,13 @@ export default function Header() {
               <button
                 type="submit"
                 disabled={isSearching}
-                className="px-4 py-2 bg-red-600 text-white rounded-r-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50"
-                style={{ marginLeft: '-1px' }}
+                className="px-4 py-2 text-white rounded-r-md focus:outline-none focus:ring-2 disabled:opacity-50 transition-colors duration-200"
+                style={{ 
+                  marginLeft: '-1px',
+                  backgroundColor: '#b91c1c'
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#991b1b'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#b91c1c'}
               >
                 Search
               </button>
@@ -107,24 +134,32 @@ export default function Header() {
             {currentUser ? (
               <>
                 <span className="text-sm text-gray-600 hidden md:block">{currentUser.email}</span>
-                <Link to="/account" title="Hesabım">
+                <Link to="/account" title="Hesabım" className="hover:opacity-75 transition-opacity duration-200">
                   <UserCircleIcon />
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="px-3 py-2 text-sm font-medium text-white bg-red-500 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400"
+                  className="px-3 py-2 text-sm font-medium text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200"
+                  style={{backgroundColor: '#b91c1c'}}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#991b1b'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = '#b91c1c'}
                 >
                   Çıkış Yap
                 </button>
               </>
             ) : (
               <>
-                <Link to="/login" className="text-sm font-medium text-gray-600 hover:text-red-600">
+                <Link to="/login" className="text-sm font-medium text-gray-600 transition-colors duration-200"
+                      onMouseEnter={(e) => e.target.style.color = '#b91c1c'}
+                      onMouseLeave={(e) => e.target.style.color = '#4b5563'}>
                   Giriş Yap
                 </Link>
                 <Link
                   to="/register"
-                  className="px-3 py-2 text-sm font-medium text-white bg-red-500 rounded-md hover:bg-red-600"
+                  className="px-3 py-2 text-sm font-medium text-white rounded-md transition-colors duration-200"
+                  style={{backgroundColor: '#b91c1c'}}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#991b1b'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = '#b91c1c'}
                 >
                   Kayıt Ol
                 </Link>
