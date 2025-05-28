@@ -20,6 +20,9 @@ import AdminUserManagement from "./pages/AdminPages/AdminUserManagement" // Admi
 import { SearchProvider } from './contexts/SearchContext';
 import BookDetailPage from './pages/BookDetailPage';
 import AIBookRecommendation from './components/AIBookRecommendation';
+import AdminCommentManagement from './pages/AdminPages/AdminCommentManagement';
+import AdminBookSearch from './pages/AdminPages/AdminBookSearch';
+import AdminEditBook from './pages/AdminPages/AdminEditBook';
 import './App.css';
 
 // Protected Route component
@@ -152,6 +155,8 @@ function App() {
                     <Route path="users" element={<AdminUserManagement />} />
                     <Route path="books" element={<AdminBooks />} />
                     <Route path="add-book" element={<AdminAddBook />} />
+                    <Route path="comments" element={<AdminCommentManagement />} />
+                    <Route path="search" element={<AdminBookSearch />} />
                   </Route>
                   {/* Diğer Admin Alt Rotaları (eğer AdminHome içinde Outlet kullanılıyorsa):
                   <Route path="/admin" element={<PrivateRoute requiredRole="admin"><AdminHome /></PrivateRoute>}>
@@ -241,6 +246,11 @@ function App() {
 
   />
   <Route path="/book/:id" element={<BookDetailPage />} />
+
+  <Route
+    path="/admin/edit-book/:id"
+    element={<AdminEditBook />}
+  />
 
                 </Routes>
               {/* </div> */}

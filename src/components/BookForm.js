@@ -6,14 +6,36 @@ import toast from 'react-hot-toast';
 
 // İkonlar
 const UploadIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className="h-6 w-6"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+    />
   </svg>
 );
 
 const ImageIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className="h-8 w-8 text-gray-400"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+    />
   </svg>
 );
 
@@ -24,11 +46,14 @@ export default function BookForm({ book, onSuccess, onCancel }) {
     targetAudience: book?.targetAudience || '',
     author: book?.author || '',
     isbn: book?.isbn || '',
-    imageUrl: book?.imageUrl || book?.thumbnail || ''
+    imageUrl: book?.imageUrl || book?.thumbnail || '',
+    pageCount: book?.pageCount || '',
   });
   const [loading, setLoading] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
-  const [imagePreview, setImagePreview] = useState(book?.imageUrl || book?.thumbnail || '');
+  const [imagePreview, setImagePreview] = useState(
+    book?.imageUrl || book?.thumbnail || '',
+  );
   const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -37,7 +62,7 @@ export default function BookForm({ book, onSuccess, onCancel }) {
 
     try {
       setUploadingImage(true);
-      
+
       // Dosya tipini kontrol et
       if (!file.type.startsWith('image/')) {
         toast.error('Lütfen bir resim dosyası seçin');
@@ -46,17 +71,17 @@ export default function BookForm({ book, onSuccess, onCancel }) {
 
       // Dosya boyutunu kontrol et (5MB max)
       if (file.size > 5 * 1024 * 1024) {
-        toast.error('Resim boyutu 5MB\'dan küçük olmalıdır');
+        toast.error("Resim boyutu 5MB'dan küçük olmalıdır");
         return null;
       }
 
       // Firebase Storage'a yükle
       const fileName = `book-covers/${Date.now()}_${file.name}`;
       const storageRef = ref(storage, fileName);
-      
+
       const snapshot = await uploadBytes(storageRef, file);
       const downloadURL = await getDownloadURL(snapshot.ref);
-      
+
       return downloadURL;
     } catch (error) {
       console.error('Image upload error:', error);
@@ -71,7 +96,7 @@ export default function BookForm({ book, onSuccess, onCancel }) {
     const file = e.target.files?.[0];
     if (file) {
       setSelectedFile(file);
-      
+
       // Önizleme için dosyayı oku
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -99,7 +124,7 @@ export default function BookForm({ book, onSuccess, onCancel }) {
       const bookData = {
         ...formData,
         imageUrl,
-        thumbnail: imageUrl // API uyumluluğu için
+        thumbnail: imageUrl, // API uyumluluğu için
       };
 
       if (book) {
@@ -110,7 +135,7 @@ export default function BookForm({ book, onSuccess, onCancel }) {
         // Add new book
         await addDoc(collection(db, 'books'), {
           ...bookData,
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toISOString(),
         });
         toast.success('Kitap başarıyla eklendi!');
       }
@@ -125,17 +150,17 @@ export default function BookForm({ book, onSuccess, onCancel }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleImageUrlChange = (e) => {
     const value = e.target.value;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      imageUrl: value
+      imageUrl: value,
     }));
     setImagePreview(value);
     setSelectedFile(null); // URL girildiyse dosya seçimini temizle
@@ -152,7 +177,7 @@ export default function BookForm({ book, onSuccess, onCancel }) {
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Kitap Kapağı
         </label>
-        
+
         {/* Resim Önizleme */}
         <div className="mb-4">
           {imagePreview ? (
@@ -171,12 +196,22 @@ export default function BookForm({ book, onSuccess, onCancel }) {
                 onClick={() => {
                   setImagePreview('');
                   setSelectedFile(null);
-                  setFormData(prev => ({ ...prev, imageUrl: '' }));
+                  setFormData((prev) => ({ ...prev, imageUrl: '' }));
                 }}
                 className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
@@ -199,7 +234,7 @@ export default function BookForm({ book, onSuccess, onCancel }) {
             onChange={handleFileSelect}
             className="hidden"
           />
-          
+
           <button
             type="button"
             onClick={triggerFileInput}
@@ -235,7 +270,10 @@ export default function BookForm({ book, onSuccess, onCancel }) {
       </div>
 
       <div>
-        <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="title"
+          className="block text-sm font-medium text-gray-700"
+        >
           Kitap Adı
         </label>
         <input
@@ -250,7 +288,10 @@ export default function BookForm({ book, onSuccess, onCancel }) {
       </div>
 
       <div>
-        <label htmlFor="author" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="author"
+          className="block text-sm font-medium text-gray-700"
+        >
           Yazar
         </label>
         <input
@@ -265,7 +306,10 @@ export default function BookForm({ book, onSuccess, onCancel }) {
       </div>
 
       <div>
-        <label htmlFor="isbn" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="isbn"
+          className="block text-sm font-medium text-gray-700"
+        >
           ISBN
         </label>
         <input
@@ -280,7 +324,29 @@ export default function BookForm({ book, onSuccess, onCancel }) {
       </div>
 
       <div>
-        <label htmlFor="targetAudience" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="pageCount"
+          className="block text-sm font-medium text-gray-700"
+        >
+          Sayfa Sayısı
+        </label>
+        <input
+          type="number"
+          name="pageCount"
+          id="pageCount"
+          min="1"
+          required
+          value={formData.pageCount}
+          onChange={handleChange}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+        />
+      </div>
+
+      <div>
+        <label
+          htmlFor="targetAudience"
+          className="block text-sm font-medium text-gray-700"
+        >
           Hedef Kitle
         </label>
         <select
@@ -299,7 +365,10 @@ export default function BookForm({ book, onSuccess, onCancel }) {
       </div>
 
       <div>
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="description"
+          className="block text-sm font-medium text-gray-700"
+        >
           Açıklama
         </label>
         <textarea
@@ -327,11 +396,19 @@ export default function BookForm({ book, onSuccess, onCancel }) {
         <button
           type="submit"
           disabled={loading || uploadingImage}
-          className={`${onCancel ? 'flex-1' : 'w-full'} flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed`}
+          className={`${
+            onCancel ? 'flex-1' : 'w-full'
+          } flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed`}
         >
-          {loading ? 'Kaydediliyor...' : uploadingImage ? 'Resim yükleniyor...' : (book ? 'Güncelle' : 'Ekle')}
+          {loading
+            ? 'Kaydediliyor...'
+            : uploadingImage
+            ? 'Resim yükleniyor...'
+            : book
+            ? 'Güncelle'
+            : 'Ekle'}
         </button>
       </div>
     </form>
   );
-} 
+}
